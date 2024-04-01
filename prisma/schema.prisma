@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  token String
+
+  userName    String
+  displayName String
+  avatar      String?
+  uploadedAt  DateTime?
+
+  votesCasted   Vote[] @relation("castedVotes")
+  votesReceived Vote[] @relation("receivedVotes")
+
+  @@unique(userName)
+  @@unique(token)
+}
+
+model Vote {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  targetId String
+  sourceId String
+
+  vote String
+
+  target User @relation(fields: [targetId], references: [id], onDelete: Cascade, name: "receivedVotes")
+  source User @relation(fields: [sourceId], references: [id], onDelete: Cascade, name: "castedVotes")
+
+  @@id([sourceId, targetId])
+}

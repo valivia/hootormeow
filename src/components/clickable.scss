@@ -1,0 +1,68 @@
+.loading {
+    outline: 1px solid red;
+    outline-offset: 0.3em;
+}
+
+.grow {
+    flex: 1;
+}
+
+.clickable {
+    border: var(--border-width) solid var(--color);
+    border-radius: var(--border-radius);
+
+    text-decoration: none;
+
+    transition: all 100ms ease;
+    padding: 0.5rem 1rem;
+    margin: 0.3rem 0;
+    white-space: nowrap;
+
+    font-weight: bold;
+    font-size: 0.8rem;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+
+    :global(> svg) {
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+    // Variant
+    &[data-variant="primary"] {
+        background-color: var(--color);
+        color: var(--theme-secondary);
+
+        &:hover:not(:disabled) {
+            background-color: var(--theme-secondary);
+            color: var(--color);
+        }
+    }
+
+    &[data-variant="secondary"] {
+        background-color: transparent;
+        color: var(--color);
+
+        &:hover:not(:disabled) {
+            background-color: var(--color);
+            color: var(--theme-secondary);
+        }
+    }
+
+    &[data-icon="true"] {
+        border-radius: 100vw;
+        padding: .8rem;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color);
+        outline-offset: 0.3em;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}
