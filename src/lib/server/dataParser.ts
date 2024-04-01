@@ -1,4 +1,4 @@
-import y, { type AnyObject, type Maybe } from "yup";
+import y, {type AnyObject, type Maybe} from "yup";
 
 export async function parseData<T extends Maybe<AnyObject>>(request: Request, schema: y.ObjectSchema<T>) {
     // Convert formdata
@@ -18,14 +18,12 @@ export async function parseData<T extends Maybe<AnyObject>>(request: Request, sc
     }
 
     // Validate schema
-    const result = schema.validate(data, {
+    return schema.validate(data, {
         stripUnknown: true,
         disableStackTrace: true,
         abortEarly: false
     }).catch((err: any) => {
         console.error(err.errors);
-        return { errors: err.errors };
+        return {errors: err.errors};
     });
-
-    return result;
 }
