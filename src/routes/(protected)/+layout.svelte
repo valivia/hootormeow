@@ -1,13 +1,7 @@
-<script lang="ts" context="module">
-    import type { ClientUser } from "lib/user";
-    export const sessionStore = writable<ClientUser>();
-</script>
-
 <script lang="ts">
     import { getUserImage } from "lib/user";
     import type { PageData } from "./$types";
     import { page } from "$app/stores";
-    import { writable } from "svelte/store";
     import { LogOutIcon } from "svelte-feather-icons";
 
     export let data: PageData;
