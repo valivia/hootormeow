@@ -6,9 +6,4 @@
 
 <style lang="scss">
     @import "styles/global.scss";
-    .wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
 </style>

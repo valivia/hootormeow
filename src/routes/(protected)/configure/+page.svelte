@@ -6,13 +6,13 @@
     import type { PageData } from "./$types";
 
     export let data: PageData;
-    let { user } = data;
+    let user = data.user;
 
     let fileInput: HTMLInputElement;
     let files: FileList | null = null;
     let src: string | null;
 
-    async function onSuccess(user: ClientUser) {
+    function onSuccess(user: ClientUser) {
         $user.uploadedAt = user.uploadedAt;
         files = null;
     }

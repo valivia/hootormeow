@@ -6,10 +6,10 @@
     import { VoteType } from "lib/vote";
     import Anchor from "components/Anchor.svelte";
     export let data: PageData;
-    let { users, castVotes } = data;
+    let { users } = data;
     let current_user_index = 0;
 
-    function onSuccess(data: unknown) {
+    function onSuccess() {
         changeIndex(1);
     }
 

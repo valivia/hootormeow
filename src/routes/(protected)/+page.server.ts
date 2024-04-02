@@ -5,8 +5,8 @@ import { prisma } from "lib/server/prisma";
 export const load = (async ({ cookies }) => {
     const user = await ensureLoggedIn(cookies);
 
-    const userCount = await prisma.user.count({})
+    const userCount = await prisma.user.count({});
 
 
-    return { user, userCount }
+    return { user, userCount };
 }) satisfies PageServerLoad;

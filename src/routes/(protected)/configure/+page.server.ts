@@ -54,7 +54,7 @@ export const actions = {
                 .resize(640, 640)
                 .toFile(`static/media/${user.id}.jpg`);
         } catch (error) {
-            logger.error(`Failed to process image.`, { user, error });
+            logger.error("Failed to process image.", { user, error });
             await prisma.user.update({ where: { id: session.id }, data: { uploadedAt: null } });
             return fail(500, { message: "Failed to process image" });
         }
@@ -76,11 +76,11 @@ export const actions = {
         try {
             await unlink(`static/media/${user.id}.jpg`);
         } catch (error) {
-            logger.error(`Failed to delete image.`, { user, error });
+            logger.error("Failed to delete image.", { user, error });
             return fail(500, { message: "Failed to delete image" });
         }
 
         logger.info(`Deleted image from user ${user.displayName}`, { user });
         return user;
     }
-}
+};

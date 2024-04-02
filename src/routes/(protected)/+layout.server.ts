@@ -4,5 +4,5 @@ import type { PageServerLoad } from "../auth/$types";
 export const load = (async ({ cookies }) => {
     const user = await ensureLoggedIn(cookies);
 
-    return { user }
+    return { user };
 }) satisfies PageServerLoad;

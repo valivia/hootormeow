@@ -7,7 +7,7 @@
     let { users } = data;
 
     function getVoteTypeScore(vote: keyof typeof VoteType) {
-        if (VoteType.hasOwnProperty(vote)) return VoteType[vote].score;
+        if (Object.prototype.hasOwnProperty.call(VoteType, vote)) return VoteType[vote].score;
 
         return 0;
     }

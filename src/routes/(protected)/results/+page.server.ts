@@ -27,5 +27,5 @@ export const load = (async ({ cookies }) => {
         fail(404);
     }
 
-    return { users }
+    return { users };
 }) satisfies PageServerLoad;

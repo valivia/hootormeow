@@ -18,7 +18,7 @@ export const load = (async ({ cookies }) => {
 
     const users = await prisma.user.findMany({
         select: { ...safeUserSelect }
-    })
+    });
 
     const castVotes = await prisma.vote.findMany({ where: { sourceId: session.id } });
 
@@ -29,7 +29,7 @@ export const load = (async ({ cookies }) => {
     return {
         users,
         castVotes,
-    }
+    };
 }) satisfies PageServerLoad;
 
 
@@ -63,4 +63,4 @@ export const actions = {
 
         logger.info(`User ${result.source.displayName} voted ${vote} on ${result.target.displayName}`);
     },
-}
+};

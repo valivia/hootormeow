@@ -8,7 +8,6 @@ import { prisma } from "lib/server/prisma";
 import { PUBLIC_DISCORD_CLIENT_ID } from "$env/static/public";
 import { DISCORD_CLIENT_SECRET } from "$env/static/private";
 
-// amoog
 export const GET: RequestHandler = async ({ url, cookies }) => {
     const authError = url.searchParams.get("error");
     const authErrorDescription = url.searchParams.get("error_description");
@@ -23,7 +22,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     const tokenResponse = await fetch(DISCORD_TOKEN_URL, {
         method: "post",
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            "Content-Type": "application/x-www-form-urlencoded"
         },
         body: new URLSearchParams({
             client_id: PUBLIC_DISCORD_CLIENT_ID,
@@ -41,7 +40,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     const userResponse = await fetch(DISCORD_USER_URL, {
         method: "get",
         headers: {
-            'Authorization': `${tokenJson.token_type} ${tokenJson.access_token}`
+            "Authorization": `${tokenJson.token_type} ${tokenJson.access_token}`
         }
     });
 
