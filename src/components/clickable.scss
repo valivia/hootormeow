@@ -8,7 +8,9 @@
 }
 
 .clickable {
-    border: var(--border-width) solid var(--color);
+    --color: var(--theme-text);
+    --used-color: var(--color);
+    border: var(--border-width) solid var(--used-color);
     border-radius: var(--border-radius);
 
     text-decoration: none;
@@ -32,32 +34,26 @@
 
     // Variant
     &[data-variant="primary"] {
-        background-color: var(--color);
+        background-color: var(--used-color);
         color: var(--theme-secondary);
-
-        &:hover:not(:disabled) {
-            background-color: var(--theme-secondary);
-            color: var(--color);
-        }
     }
 
     &[data-variant="secondary"] {
         background-color: transparent;
-        color: var(--color);
+        color: var(--used-color);
+    }
 
-        &:hover:not(:disabled) {
-            background-color: var(--color);
-            color: var(--theme-secondary);
-        }
+    &:hover:not(:disabled) {
+        --used-color: color-mix(in oklab, var(--color) 50%, var(--theme-text));
     }
 
     &[data-icon="true"] {
         border-radius: 100vw;
-        padding: .8rem;
+        padding: 0.8rem;
     }
 
     &:focus-visible {
-        outline: 2px solid var(--color);
+        outline: 2px solid var(--used-color);
         outline-offset: 0.3em;
     }
 
