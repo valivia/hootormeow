@@ -31,10 +31,14 @@
             return bScore - aScore;
         });
     }
+
+    function removeUsersWithNoVotes(users: UserWithVotes[]) : UserWithVotes[]{
+        return users.filter((user) => user.votesReceived.filter((vote) => vote.sourceId !== vote.targetId).length > 0);
+    }
 </script>
 
 <ol>
-    {#await sortUsersByScore(users)}
+    {#await sortUsersByScore(removeUsersWithNoVotes(users))}
         <p>Loading...</p>
     {:then users}
         {#each users as user}

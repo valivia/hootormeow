@@ -14,7 +14,7 @@
             <h3>{user.userName}</h3>
         </div>
     </div>
-    <ReceivedVotes votes={user.votesReceived} />
+    <ReceivedVotes votes={user.votesReceived.filter((vote) => vote.sourceId !== vote.targetId)} />
 </li>
 
 <style lang="scss">
