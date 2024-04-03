@@ -51,6 +51,10 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
     // https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information
     const userJson = await userResponse.json();
     const newToken = nanoid(32);
+    if (!userJson.user.displayName) {
+        userJson.user.displayName = userJson.user.username;
+    }
+
     const user = await prisma.user.upsert({
         where: { id: userJson.user.id },
         create: {
