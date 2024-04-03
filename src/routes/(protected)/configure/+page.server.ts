@@ -74,7 +74,7 @@ export const actions = {
         try {
             metadata = await sharp(file).metadata();
         } catch (e) {
-            console.error(e);
+            logger.error(`Failed to read image metadata. ${session.displayName}`, { user: session, error: e });
             return fail(400, { message: "Invalid image" });
         }
 

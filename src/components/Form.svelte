@@ -3,22 +3,32 @@
     import type { SubmitFunction } from "@sveltejs/kit";
     import type { HTMLFormAttributes } from "svelte/elements";
 
-    const defaultFailure = (result: any) => {
-        alert(
-            result.validationError
-                ? Object.values(result?.validationError)
-                      .map((value) => " - " + value)
-                      .join("\n")
-                : "An error occurred",
-        );
+    const defaultFailure = (result: unknown) => {
+        let error = "An error occurred";
+
+        if (result && typeof result === "object") {
+            if ("validationError" in result) {
+                error = Object.values(result.validationError as string[])
+                    .map((value) => " - " + value)
+                    .join("\n");
+            } else if ("message" in result) {
+                error = result.message as string;
+            } else {
+                console.log(result);
+            }
+        } else {
+            console.log(result);
+        }
+
+        alert(error);
     };
 
     interface $$Props extends HTMLFormAttributes {
         action: string;
         onSubmit?: SubmitFunction;
-        onSuccess?: (data: any) => void;
-        onFailure?: (data: any) => void;
-        onError?: (data: any) => void;
+        onSuccess?: (data: unknown) => void;
+        onFailure?: (data: unknown) => void;
+        onError?: (data: unknown) => void;
         loading?: boolean;
         reset?: boolean;
         id?: string;
