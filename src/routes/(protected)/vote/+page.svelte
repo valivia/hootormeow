@@ -85,7 +85,7 @@
                         : "secondary"}
                     value={key}
                     color={value.color}
-                    disabled={loading}
+                    disabled={loading || currentUser.vote === key}
                 >
                     <svelte:component this={value.icon} />
                     {value.name}
@@ -103,7 +103,11 @@
             </Button>
 
             {#if currentUserIndex === candidates.length - 1}
-                <Anchor href="/results" variant="primary" color="var(--theme-accent)">Results</Anchor>
+                <Anchor
+                    href="/results"
+                    variant="primary"
+                    color="var(--theme-accent)">Results</Anchor
+                >
             {:else}
                 <Button
                     type="button"

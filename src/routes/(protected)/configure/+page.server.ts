@@ -45,7 +45,11 @@ export const actions = {
 
         const user = await prisma.user.delete({
             where: { id: session.id },
-            select: safeUserSelect
+            select: {
+                ...safeUserSelect,
+                votesCasted: true,
+                votesReceived: true,
+            }
         });
 
         logger.info(`Deleted user ${user.displayName}`, { user });
