@@ -43,6 +43,7 @@ export const actions = {
     async deleteAccount({ cookies }) {
         const session = await ensureLoggedIn(cookies);
 
+        // Delete the user
         const user = await prisma.user.delete({
             where: { id: session.id },
             select: {
@@ -51,6 +52,13 @@ export const actions = {
                 votesReceived: true,
             }
         });
+
+        // Delete the image if it exists
+        if (user.uploadedAt) {
+            await unlink(`${MEDIA_PATH}/${user.id}.jpg`).catch((error) => {
+                logger.error("Failed to delete image.", { user, error });
+            });
+        }
 
         logger.info(`Deleted user ${user.displayName}`, { user });
 
