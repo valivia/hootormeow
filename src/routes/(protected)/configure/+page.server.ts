@@ -3,16 +3,43 @@ import { parseData } from "lib/server/dataParser";
 import { prisma } from "lib/server/prisma.js";
 import { logger } from "lib/server/logger.js";
 import { ensureLoggedIn } from "lib/server/session";
-import { unlink } from "fs/promises";
+import type { PageServerLoad } from "./$types";
 import { safeUserSelect } from "lib/user";
+import { unlink } from "fs/promises";
+import { MEDIA_PATH } from "$env/static/private";
 import sharp from "sharp";
 import y from "yup";
+
+
+export const load = (async ({ cookies }) => {
+    const session = await ensureLoggedIn(cookies);
+
+    const data = await prisma.vote.count({
+        where: { sourceId: session.id }
+    });
+
+    return { voteCount: data };
+}) satisfies PageServerLoad;
+
 
 const createSchema = y.object({
     file: y.mixed<File>().required(),
 });
 
 export const actions = {
+    async resetVotes({ cookies }) {
+        const session = await ensureLoggedIn(cookies);
+
+        const user = await prisma.user.update({
+            where: { id: session.id },
+            data: { votesCasted: { deleteMany: { sourceId: session.id } } },
+            select: safeUserSelect
+        });
+
+        logger.info(`Reset votes for user ${user.displayName}`, { user });
+        return user;
+    },
+
     async upload({ request, cookies }) {
         const session = await ensureLoggedIn(cookies);
         const data = await parseData(request, createSchema);
@@ -52,7 +79,7 @@ export const actions = {
             await sharp(file)
                 .jpeg({ mozjpeg: true, quality: 80 })
                 .resize(640, 640)
-                .toFile(`static/media/${user.id}.jpg`);
+                .toFile(`${MEDIA_PATH}/${user.id}.jpg`);
         } catch (error) {
             logger.error("Failed to process image.", { user, error });
             await prisma.user.update({ where: { id: session.id }, data: { uploadedAt: null } });
@@ -74,7 +101,7 @@ export const actions = {
         });
 
         try {
-            await unlink(`static/media/${user.id}.jpg`);
+            await unlink(`${MEDIA_PATH}/${user.id}.jpg`);
         } catch (error) {
             logger.error("Failed to delete image.", { user, error });
             return fail(500, { message: "Failed to delete image" });

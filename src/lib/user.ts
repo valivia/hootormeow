@@ -1,8 +1,9 @@
 import type { User, Vote } from "@prisma/client";
+import { PUBLIC_MEDIA_PATH } from "$env/static/public";
 
 export function getUserImage(user: ClientUser) {
     return user.uploadedAt
-        ? `/media/${user.id}.jpg?uploadedAt=${Number(user.uploadedAt)}`
+        ? `${PUBLIC_MEDIA_PATH}/${user.id}.jpg?uploadedAt=${Number(user.uploadedAt)}`
         : `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}?size=4096`;
 }
 

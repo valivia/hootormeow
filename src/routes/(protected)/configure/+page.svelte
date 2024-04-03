@@ -7,6 +7,7 @@
 
     export let data: PageData;
     let user = data.user;
+    let voteCount = data.voteCount;
 
     let fileInput: HTMLInputElement;
     let files: FileList | null = null;
@@ -31,48 +32,58 @@
 <button on:click={() => fileInput.click()}>
     <img {src} alt="user" />
 </button>
-<div class="buttons">
-    <Form
-        {onSuccess}
-        action="/configure?/upload"
-        enctype="multipart/form-data"
-        bind:loading
-    >
-        <input
-            type="file"
-            name="file"
-            bind:this={fileInput}
-            bind:files
-            hidden
-            accept="image/jpeg, image/png, image/webp, image/avif"
-        />
 
-        <fieldset>
-            <Button type="submit" disabled={loading || files === null} icon>
-                <SaveIcon />
-            </Button>
+<Form
+    {onSuccess}
+    action="/configure?/upload"
+    enctype="multipart/form-data"
+    bind:loading
+>
+    <input
+        type="file"
+        name="file"
+        bind:this={fileInput}
+        bind:files
+        hidden
+        accept="image/jpeg, image/png, image/webp, image/avif"
+    />
 
-            {#if $user.uploadedAt}
-                <Form action="/configure?/delete" bind:loading {onSuccess}>
-                    <Button
-                        type="submit"
-                        color="var(--theme-danger)"
-                        disabled={loading}
-                        icon
-                    >
-                        <Trash2Icon />
-                    </Button>
-                </Form>
-            {/if}
-        </fieldset>
+    <fieldset>
+        <Button type="submit" disabled={loading || files === null} icon>
+            <SaveIcon />
+        </Button>
+
+        {#if $user.uploadedAt}
+            <Form action="/configure?/delete" bind:loading {onSuccess}>
+                <Button
+                    type="submit"
+                    color="var(--theme-danger)"
+                    disabled={loading}
+                    icon
+                >
+                    <Trash2Icon />
+                </Button>
+            </Form>
+        {/if}
+    </fieldset>
+</Form>
+
+{#if voteCount > 0}
+    <Form action="/configure?/resetVotes" bind:loading {onSuccess}>
+        <Button
+            type="submit"
+            color="var(--theme-danger)"
+            disabled={loading}
+            on:click={(event) =>
+                confirm("Are you sure you want to reset your votes?") ||
+                event.preventDefault()}
+        >
+            Reset votes
+        </Button>
     </Form>
-</div>
+{/if}
 
 <style lang="scss">
-    .buttons {
-        display: flex;
-        gap: 1em;
-    }
     button {
         $size: min(16rem, 100vw);
         width: $size;
