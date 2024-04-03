@@ -18,11 +18,6 @@
         redirect_uri: PUBLIC_DISCORD_REDIRECT_URI,
     });
     const finalUrl = `${DISCORD_AUTHORIZE_URL}?${queryParams.toString()}`;
-    console.log({
-        finalUrl,
-        PUBLIC_DISCORD_CLIENT_ID,
-        PUBLIC_DISCORD_REDIRECT_URI,
-    });
 </script>
 
 {#if user}
