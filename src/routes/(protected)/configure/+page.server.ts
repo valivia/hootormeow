@@ -1,4 +1,4 @@
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { parseData } from "lib/server/dataParser";
 import { prisma } from "lib/server/prisma.js";
 import { logger } from "lib/server/logger.js";
@@ -38,6 +38,20 @@ export const actions = {
 
         logger.info(`Reset votes for user ${user.displayName}`, { user });
         return user;
+    },
+
+    async deleteAccount({ cookies }) {
+        const session = await ensureLoggedIn(cookies);
+
+        const user = await prisma.user.delete({
+            where: { id: session.id },
+            select: safeUserSelect
+        });
+
+        logger.info(`Deleted user ${user.displayName}`, { user });
+
+        cookies.set("sessionToken", "", { path: "/", expires: new Date(0) });
+        redirect(302, "/auth");
     },
 
     async upload({ request, cookies }) {

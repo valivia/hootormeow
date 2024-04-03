@@ -14,6 +14,9 @@ export async function loggedInUser(cookies: Cookies): Promise<ClientUser | null>
 
 export async function ensureLoggedIn(cookies: Cookies): Promise<ClientUser> {
     const user = await loggedInUser(cookies);
-    if (!user) redirect(302, "/auth");
+    if (!user) {
+        cookies.set("sessionToken", "", { path: "/", expires: new Date(0) });
+        redirect(302, "/auth");
+    }
     return user;
 }

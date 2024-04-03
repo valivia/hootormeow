@@ -4,6 +4,7 @@
     import { getUserImage, type ClientUser } from "lib/user";
     import { SaveIcon, Trash2Icon } from "svelte-feather-icons";
     import type { PageData } from "./$types";
+    import { PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
 
     export let data: PageData;
     let user = data.user;
@@ -16,6 +17,16 @@
     function onSuccess(user: ClientUser) {
         $user.uploadedAt = user.uploadedAt;
         files = null;
+    }
+
+    $: {
+        if (
+            files &&
+            files[0]?.size > Number(PUBLIC_MAX_FILE_SIZE) * 1024 * 1024
+        ) {
+            alert(`File is too large. Max size is ${PUBLIC_MAX_FILE_SIZE}MB.`);
+            files = null;
+        }
     }
 
     $: {
@@ -52,8 +63,17 @@
         <Button type="submit" disabled={loading || files === null} icon>
             <SaveIcon />
         </Button>
-
-        {#if $user.uploadedAt}
+        {#if files}
+            <Button
+                type="button"
+                color="var(--theme-danger)"
+                disabled={loading}
+                icon
+                on:click={() => (files = null)}
+            >
+                <Trash2Icon />
+            </Button>
+        {:else if $user.uploadedAt}
             <Form action="/configure?/delete" bind:loading {onSuccess}>
                 <Button
                     type="submit"
@@ -68,22 +88,42 @@
     </fieldset>
 </Form>
 
-{#if voteCount > 0}
-    <Form action="/configure?/resetVotes" bind:loading {onSuccess}>
+<h2>Account management</h2>
+<section>
+    {#if voteCount > 0}
+        <Form action="/configure?/resetVotes" bind:loading {onSuccess}>
+            <Button
+                type="submit"
+                color="var(--theme-danger)"
+                disabled={loading}
+                on:click={(event) =>
+                    confirm("Are you sure you want to reset your votes?") ||
+                    event.preventDefault()}
+            >
+                Reset votes
+            </Button>
+        </Form>
+    {/if}
+    <Form action="/configure?/deleteAccount" bind:loading {onSuccess}>
         <Button
             type="submit"
             color="var(--theme-danger)"
             disabled={loading}
             on:click={(event) =>
-                confirm("Are you sure you want to reset your votes?") ||
+                confirm("Are you sure you want to delete your account?") ||
                 event.preventDefault()}
         >
-            Reset votes
+            Delete account
         </Button>
     </Form>
-{/if}
+</section>
 
 <style lang="scss">
+    section {
+        display: flex;
+        gap: 0.5em;
+    }
+
     button {
         $size: min(16rem, 100vw);
         width: $size;
