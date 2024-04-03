@@ -1,0 +1,36 @@
+services:
+
+  proxy:
+    image: nginx:alpine
+    container_name: hom-proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./media:/app/media:ro
+    networks:
+      - bridge
+      - nginx
+
+  # Client
+  website:
+    container_name: hom-website
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./app.db:/app/app.db:rw
+      - ./media:/app/media:rw
+      - ./logs:/app/logs:rw
+    environment:
+      # Change this to your domain
+      - ORIGIN=https://hootormeow.hootsifer.com
+    env_file:
+      - .env
+    networks:
+      - bridge
+
+networks:
+  bridge:
+  nginx:
+    external: true
+    name: nginx

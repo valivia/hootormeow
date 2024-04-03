@@ -5,7 +5,7 @@ import { redirect, type RequestHandler } from "@sveltejs/kit";
 import { nanoid } from "nanoid";
 import { DISCORD_TOKEN_URL, DISCORD_USER_URL } from "lib/auth";
 import { prisma } from "lib/server/prisma";
-import { PUBLIC_DISCORD_CLIENT_ID } from "$env/static/public";
+import { PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
 import { DISCORD_CLIENT_SECRET } from "$env/static/private";
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
             client_id: PUBLIC_DISCORD_CLIENT_ID,
             client_secret: DISCORD_CLIENT_SECRET,
             grant_type: "authorization_code",
-            redirect_uri: "http://localhost:5173/auth/redirect",
+            redirect_uri: PUBLIC_DISCORD_REDIRECT_URI,
             code
         }).toString(),
     });
