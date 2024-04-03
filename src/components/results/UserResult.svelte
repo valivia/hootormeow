@@ -11,10 +11,10 @@
             <img {src} alt="avatar" />
         </div>
         <div class="info">
-            <h3>{user.userName}</h3>
+            <h3>{user.displayName}</h3>
         </div>
     </div>
-    <ReceivedVotes votes={user.votesReceived.filter((vote) => vote.sourceId !== vote.targetId)} />
+    <ReceivedVotes {user} />
 </li>
 
 <style lang="scss">

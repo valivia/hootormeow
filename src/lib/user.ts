@@ -1,5 +1,6 @@
-import type { User, Vote } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { PUBLIC_MEDIA_PATH } from "$env/static/public";
+import type { VoteKey } from "./vote";
 
 export function getUserImage(user: ClientUser) {
     return user.uploadedAt
@@ -19,6 +20,7 @@ export const safeUserSelect = {
 };
 
 export type UserWithVotes = ClientUser & {
-    votesReceived: Vote[];
-    votesCasted: Vote[]
-};
+    votes: {
+        [K in VoteKey | "total"]: number;
+    }
+}

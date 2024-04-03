@@ -1,9 +1,10 @@
 import { prisma } from "lib/server/prisma";
 import type { PageServerLoad } from "./$types";
 import { error, fail } from "@sveltejs/kit";
-import { safeUserSelect } from "lib/user";
+import { safeUserSelect, type UserWithVotes } from "lib/user";
 import { ensureLoggedIn } from "lib/server/session";
 import { PUBLIC_SHOW_RESULTS } from "$env/static/public";
+import { VoteType, type VoteKey } from "lib/vote";
 
 export const load = (async ({ cookies }) => {
     await ensureLoggedIn(cookies);
@@ -17,15 +18,37 @@ export const load = (async ({ cookies }) => {
         select: {
             ...safeUserSelect,
             votesReceived: true,
-            votesCasted: true
+        },
+        where: {
+            votesReceived: { some: {} }
         }
     });
 
-    const users = data.filter((user) => user.votesReceived.length !== 0);
+    const results: UserWithVotes[] = data
+        .map((user) => {
+            const votes = user.votesReceived.reduce((acc, vote) => {
+                const key = vote.vote as VoteKey;
+                acc[key]++;
+                acc.total += VoteType[key].score;
+                return acc;
+            }, {
+                date: 0,
+                smash: 0,
+                maybe: 0,
+                pass: 0,
+                total: 0,
+            } as UserWithVotes["votes"]);
 
-    if (users.length <= 0) {
+            return {
+                ...user,
+                votes,
+            };
+        })
+        .sort((a, b) => b.votes.total - a.votes.total);
+
+    if (results.length <= 0) {
         fail(404);
     }
 
-    return { users };
+    return { results };
 }) satisfies PageServerLoad;

@@ -1,19 +1,25 @@
 <script lang="ts">
     import { VoteType } from "lib/vote";
-    import type { Vote } from "@prisma/client";
-    export let votes: Vote[];
+    import type { UserWithVotes } from "lib/user";
+    import type { SvelteComponent } from "svelte";
+    export let user: UserWithVotes;
+
+    // Awful code
+    const VoteTypes = Object.entries(VoteType) as [
+        keyof UserWithVotes["votes"],
+        { color: string; icon: typeof SvelteComponent },
+    ][];
 </script>
 
 <div class="received-votes">
     <ul class="votes">
-        {#each Object.entries(VoteType) as [key, value]}
+        {#each VoteTypes as [key, value]}
             <li style="color: {value.color}">
                 <svelte:component this={value.icon} />
-                {votes.filter((vote) => vote.vote === key).length}
+                {user.votes[key]}
             </li>
         {/each}
     </ul>
-    
 </div>
 
 <style lang="scss">

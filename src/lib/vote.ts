@@ -5,6 +5,9 @@ import {
     SlashIcon,
 } from "svelte-feather-icons";
 
+export type Vote = typeof VoteType;
+export type VoteKey = keyof Vote;
+
 export const VoteType = {
     date: {
         name: "Date",
