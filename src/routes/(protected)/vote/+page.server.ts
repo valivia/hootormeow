@@ -17,18 +17,40 @@ export const load = (async ({ cookies }) => {
     }
 
     const users = await prisma.user.findMany({
-        select: { ...safeUserSelect }
+        select: {
+            ...safeUserSelect,
+            votesReceived: {
+                select: { vote: true, targetId: true },
+                where: { sourceId: session.id },
+            }
+        },
+        orderBy: { createdAt: "asc" }
     });
 
-    const castVotes = await prisma.vote.findMany({ where: { sourceId: session.id } });
+    type User = typeof users[0];
+    interface VoteUser extends Omit<User, "votesReceived"> {
+        vote: string | null;
+    }
 
-    if (!users) {
-        error(500);
+    const candidates: VoteUser[] = users
+        .map((user) => {
+            return {
+                ...user,
+                votesReceived: undefined,
+                vote: user.votesReceived[0]?.vote ?? null,
+            };
+        })
+        // Sort so all users with no vote are at the top
+        .sort((a, b) =>
+            a.vote === null ? 1 : b.vote === null ? -1 : 0
+        );
+
+    if (!candidates) {
+        error(404, "No candidates found");
     }
 
     return {
-        users,
-        castVotes,
+        candidates,
     };
 }) satisfies PageServerLoad;
 
@@ -62,5 +84,7 @@ export const actions = {
         });
 
         logger.info(`User ${result.source.displayName} voted ${vote} on ${result.target.displayName}`);
+
+        return { vote: result };
     },
 };

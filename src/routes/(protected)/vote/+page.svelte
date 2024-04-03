@@ -5,46 +5,68 @@
     import Button from "components/Button.svelte";
     import { VoteType } from "lib/vote";
     import Anchor from "components/Anchor.svelte";
-    export let data: PageData;
-    let { users } = data;
-    let current_user_index = 0;
+    import type { Vote } from "@prisma/client";
 
-    function onSuccess() {
+    export let data: PageData;
+    let { candidates } = data;
+    let currentUserIndex = 0;
+    let voteCount = 0;
+
+    // Find the first candidate that has not been voted on
+    for (let i = 0; i < candidates.length; i++) {
+        // If the candidate has not been voted on, set the current user to that candidate
+        if (candidates[i].vote === null) {
+            currentUserIndex = i;
+            break;
+        }
+        voteCount++;
+
+        // If all candidates have been voted on, set the current user to the last candidate
+        if (i === candidates.length - 1) {
+            currentUserIndex = candidates.length - 1;
+        }
+    }
+
+    function onSuccess(result: { vote: Vote }) {
+        if (candidates[currentUserIndex].vote === null) {
+            voteCount++;
+        }
+
+        candidates[currentUserIndex].vote = result.vote.vote;
         changeIndex(1);
     }
 
     function changeIndex(change: number) {
-        current_user_index += change;
-        if (current_user_index < 0) {
-            current_user_index = 0;
-        } else if (current_user_index >= users.length) {
-            current_user_index = users.length - 1;
+        currentUserIndex += change;
+        if (currentUserIndex < 0) {
+            currentUserIndex = 0;
+        } else if (currentUserIndex >= candidates.length) {
+            currentUserIndex = candidates.length - 1;
         }
     }
 
-    $: current_user = users[current_user_index];
-    $: src = getUserImage(current_user);
-    $: progress_string = `${Math.round(calculateProgress())}% (${current_user_index}/${users.length})`;
-    $: progress = (current_user_index / users.length) * 100;
-    let loading = false;
+    $: currentUser = candidates[currentUserIndex];
+    $: src = getUserImage(currentUser);
 
-    // Calculate the progress percentage
-    function calculateProgress(): number {
-        return ((current_user_index + 1) / users.length) * 100;
-    }
+    // Progress
+    $: progressString = `${Math.round((voteCount / candidates.length) * 100)}% (${voteCount}/${candidates.length})`;
+    $: progress = (voteCount / candidates.length) * 100;
+    let loading = false;
 </script>
 
 <div class="wrapper">
     <Form action="/vote?/castVote" {onSuccess} bind:loading>
         <!-- Name -->
-        <h1>{current_user.displayName}</h1>
+        <h1>{currentUser.displayName}</h1>
 
         <!-- image -->
         <img {src} alt="user" />
 
+        {currentUserIndex + 1}
+
         <!-- progress -->
         <div class="progress">
-            Progress: {progress_string}
+            Progress: {progressString}
         </div>
 
         <div class="progress-bar">
@@ -52,16 +74,15 @@
         </div>
 
         <!-- Input -->
-        <input
-            type="hidden"
-            name="targetId"
-            value={users[current_user_index].id}
-        />
+        <input type="hidden" name="targetId" value={currentUser.id} />
         <fieldset class="button-group">
             {#each Object.entries(VoteType) as [key, value]}
                 <Button
                     type="submit"
                     name="vote"
+                    variant={currentUser?.vote === key
+                        ? "primary"
+                        : "secondary"}
                     value={key}
                     color={value.color}
                     disabled={loading}
@@ -75,14 +96,14 @@
         <fieldset>
             <Button
                 type="button"
-                disabled={loading || current_user_index === 0}
+                disabled={loading || currentUserIndex === 0}
                 on:click={() => changeIndex(-1)}
             >
                 Previous
             </Button>
 
-            {#if current_user_index === users.length - 1}
-                <Anchor href="/results">Results</Anchor>
+            {#if currentUserIndex === candidates.length - 1}
+                <Anchor href="/results" variant="primary" color="var(--theme-accent)">Results</Anchor>
             {:else}
                 <Button
                     type="button"
