@@ -5,48 +5,51 @@
     $: src = getUserImage(user);
 </script>
 
-<li class="UserResult">
-    <div class="avatarContainer">
-        <div class="avatar">
-            <img {src} alt="avatar" />
-        </div>
-        <div class="info">
-            <h3>{user.displayName}</h3>
-        </div>
+<li>
+    <img {src} alt="avatar" />
+    <div class="info">
+        <h3>{user.displayName}</h3>
+        <ReceivedVotes {user} />
     </div>
-    <ReceivedVotes {user} />
+    <div class="total">{user.votes.total}</div>
 </li>
 
 <style lang="scss">
     @use "styles/utils.scss" as *;
 
-    .avatarContainer {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        margin-right: 1rem;
-    }
     li {
         @include boxShadow;
-        list-style: none;
-        margin: 8px 0;
-        font-family: "raleway", Helvetica, sans-serif;
         display: flex;
-        align-items: center;
-        padding: 0.125rem;
         background-color: var(--theme-secondary);
-        border-radius: 0.5rem;
-        flex-direction: column;
-        // margin-right: 1rem;
+        border-radius: 100vw;
+        gap: 1rem;
+        overflow: hidden;
+
+        width: min(60ch, 90vw);
+
         img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 96px;
+            height: 96px;
+            border-radius: 100vw;
         }
     }
+
+    h3 {
+        padding-left: 0.2em;
+    }
+
     .info {
-        h3 {
-            margin: 0;
-        }
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .total {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-left: auto;
+        padding-inline: 1.5rem;
     }
 </style>
