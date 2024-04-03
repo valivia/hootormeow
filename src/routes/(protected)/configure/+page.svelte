@@ -91,7 +91,11 @@
 <h2>Account management</h2>
 <section>
     {#if voteCount > 0}
-        <Form action="/configure?/resetVotes" bind:loading {onSuccess}>
+        <Form
+            action="/configure?/resetVotes"
+            bind:loading
+            onSuccess={() => (voteCount = 0)}
+        >
             <Button
                 type="submit"
                 color="var(--theme-danger)"
@@ -104,7 +108,7 @@
             </Button>
         </Form>
     {/if}
-    <Form action="/configure?/deleteAccount" bind:loading {onSuccess}>
+    <Form action="/configure?/deleteAccount" bind:loading>
         <Button
             type="submit"
             color="var(--theme-danger)"
