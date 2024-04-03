@@ -37,7 +37,7 @@
     let loading = false;
 </script>
 
-<h1>Configure your profile {$user.displayName}</h1>
+<h1>{$user.displayName}</h1>
 <p>Please upload an image of yourself</p>
 
 <button on:click={() => fileInput.click()}>

@@ -7,8 +7,9 @@ import { DISCORD_TOKEN_URL, DISCORD_USER_URL } from "lib/auth";
 import { prisma } from "lib/server/prisma";
 import { PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
 import { DISCORD_CLIENT_SECRET } from "$env/static/private";
+import { logger } from "lib/server/logger";
 
-export const GET: RequestHandler = async ({ url, cookies }) => {
+export const GET: RequestHandler = async ({ url, cookies, request }) => {
     const authError = url.searchParams.get("error");
     const authErrorDescription = url.searchParams.get("error_description");
 
@@ -66,6 +67,9 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
         }
     });
 
+
+    const ip = request.headers.get("cf-connecting-ip");
+    logger.info(`Logged in user ${user.displayName} - ${ip}`, { user, ip });
     const tokenExpirationDate = new Date(Date.now() + (60 * 60 * 24 * 1000));
     cookies.set("sessionToken", user.token, { path: "/", expires: tokenExpirationDate });
     redirect(302, "/");

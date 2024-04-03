@@ -5,7 +5,7 @@
 </script>
 
 <h1>Hoot or Meow</h1>
-<p>There are currently {data.userCount} users waiting to vote.</p>
+<p>There are currently {data.userCount} users signed up.</p>
 
 <a href="/vote">Vote</a>
 <a href="/results">Results</a>
