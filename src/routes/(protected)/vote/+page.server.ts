@@ -24,7 +24,7 @@ export const load = (async ({ cookies }) => {
                 where: { sourceId: session.id },
             }
         },
-        orderBy: { createdAt: "asc" }
+        orderBy: { displayName: "asc" }
     });
 
     type User = typeof users[0];

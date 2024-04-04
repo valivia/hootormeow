@@ -31,6 +31,6 @@ export const VoteType = {
         name: "Pass",
         color: "var(--theme-danger)",
         icon: SlashIcon,
-        score: -1,
+        score: -.5,
     },
 };
