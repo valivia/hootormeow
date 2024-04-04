@@ -7,7 +7,15 @@
 </script>
 
 <ol>
-    {#each results as user (user.id)}
-        <UserResult {user} />
+    {#each results as user, index (user.id)}
+        <UserResult {user} {index} />
     {/each}
 </ol>
+
+<style lang="scss">
+    ol {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+</style>

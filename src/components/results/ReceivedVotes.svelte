@@ -23,23 +23,24 @@
 </div>
 
 <style lang="scss">
-    ul {
-        list-style: none;
+    ul,
+    li {
         display: flex;
-        gap: 0.5em;
-        justify-content: space-between;
-        margin: 0.625rem;
         flex-wrap: wrap;
-        flex-direction: row;
+        align-items: center;
     }
-    .received-votes {
-        margin: 0.625rem;
-        font-family: "raleway", Helvetica, sans-serif;
+    ul {
+        font-size: clamp(0.8rem, 3vw, 1rem);
+        list-style: none;
+        gap: 0.7em;
     }
 
     li {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5em;
+        gap: 0.2em;
+
+        :global(> svg) {
+            width: 1.2em;
+            height: 1.2em;
+        }
     }
 </style>

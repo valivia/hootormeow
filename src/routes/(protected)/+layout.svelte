@@ -17,7 +17,11 @@
         Results
     </a>
     <div class="spacer"></div>
-    <a href="/auth/logout" class="logout">
+    <a
+        href="/auth/logout"
+        class="logout"
+        on:click={(e) => confirm("Are you sure you want to log out?") || e.preventDefault()}
+    >
         <LogOutIcon />
     </a>
     <a href="/configure" aria-current={$page.url.pathname === "/configure"}>
@@ -56,7 +60,7 @@
             font-size: clamp(1rem, 2vw, 1.3rem);
 
             &:not(:last-child) {
-                padding: 0.5rem 1rem;
+                padding: 0.5rem;
             }
         }
 

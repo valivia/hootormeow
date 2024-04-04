@@ -142,7 +142,7 @@
     }
 
     img {
-        $size: min(40ch, 100vw);
+        $size: min(40ch, 90vw);
         width: $size;
         height: $size;
         border-radius: var(--border-radius);
