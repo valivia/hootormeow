@@ -1,16 +1,16 @@
 <script lang="ts">
     import Form from "components/Form.svelte";
-    import type { PageData } from "./$types";
     import { getUserImage } from "lib/user";
     import Button from "components/Button.svelte";
     import { VoteType } from "lib/vote";
     import Anchor from "components/Anchor.svelte";
     import type { Vote } from "@prisma/client";
 
-    export let data: PageData;
+    let { data } = $props();
+
     let { candidates } = data;
-    let currentUserIndex = 0;
-    let voteCount = 0;
+    let currentUserIndex = $state(0);
+    let voteCount = $state(0);
 
     // Find the first candidate that has not been voted on
     for (let i = 0; i < candidates.length; i++) {
@@ -27,12 +27,14 @@
         }
     }
 
-    function onSuccess(result: { vote: Vote }) {
+    function onSuccess(result: unknown) {
+        const { vote } = result as { vote: Vote };
+
         if (candidates[currentUserIndex].vote === null) {
             voteCount++;
         }
 
-        candidates[currentUserIndex].vote = result.vote.vote;
+        candidates[currentUserIndex].vote = vote.vote;
         changeIndex(1);
     }
 
@@ -45,19 +47,31 @@
         }
     }
 
-    $: currentUser = candidates[currentUserIndex];
-    $: src = getUserImage(currentUser);
+    let currentUser = $derived(candidates[currentUserIndex]);
+    let src = $derived(getUserImage(currentUser));
 
     // Progress
-    $: progressString = `${Math.round((voteCount / candidates.length) * 100)}% (${voteCount}/${candidates.length})`;
-    $: progress = (voteCount / candidates.length) * 100;
-    let loading = false;
+    let progressString = $derived(
+        `${Math.round((voteCount / candidates.length) * 100)}% (${voteCount}/${candidates.length})`,
+    );
+    let progress = $derived((voteCount / candidates.length) * 100);
+    let loading = $state(false);
+
+    let categories = $derived.by(() => {
+        let categories = new Set<string>();
+        currentUser.isFeminine && categories.add("Feminine");
+        currentUser.isMasculine && categories.add("Masculine");
+        return categories;
+    });
 </script>
 
 <div class="wrapper">
     <Form action="/vote?/castVote" {onSuccess} bind:loading>
         <!-- Name -->
-        <h1>{currentUser.displayName}</h1>
+        <header>
+            <h1>{currentUser.displayName}</h1>
+            <span>{Array.from(categories).join(", ")}</span>
+        </header>
 
         <!-- image -->
         <img {src} alt="user" />
@@ -80,42 +94,26 @@
                 <Button
                     type="submit"
                     name="vote"
-                    variant={currentUser?.vote === key
-                        ? "primary"
-                        : "secondary"}
+                    variant={currentUser?.vote === key ? "primary" : "secondary"}
                     value={key}
                     color={value.color}
                     disabled={loading || currentUser.vote === key}
                 >
-                    <svelte:component this={value.icon} />
+                    <value.icon />
                     {value.name}
                 </Button>
             {/each}
         </fieldset>
 
         <fieldset>
-            <Button
-                type="button"
-                disabled={loading || currentUserIndex === 0}
-                on:click={() => changeIndex(-1)}
-            >
+            <Button type="button" disabled={loading || currentUserIndex === 0} on:click={() => changeIndex(-1)}>
                 Previous
             </Button>
 
             {#if currentUserIndex === candidates.length - 1}
-                <Anchor
-                    href="/results"
-                    variant="primary"
-                    color="var(--theme-accent)">Results</Anchor
-                >
+                <Anchor href="/results" variant="primary" color="var(--theme-accent)">Results</Anchor>
             {:else}
-                <Button
-                    type="button"
-                    disabled={loading}
-                    on:click={() => changeIndex(1)}
-                >
-                    Next
-                </Button>{/if}
+                <Button type="button" disabled={loading} on:click={() => changeIndex(1)}>Next</Button>{/if}
         </fieldset>
     </Form>
 </div>
@@ -138,6 +136,15 @@
             flex-direction: column;
             align-items: center;
             gap: 1rem;
+        }
+    }
+
+    header {
+        text-align: center;
+
+        span {
+            font-size: 0.8rem;
+            opacity: 0.8;
         }
     }
 

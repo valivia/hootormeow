@@ -26,7 +26,33 @@ const createSchema = y.object({
     file: y.mixed<File>().required(),
 });
 
+const updateScehema = y.object({
+    isMasculine: y.string().optional(),
+    isFeminine:  y.string().optional(),
+});
+
 export const actions = {
+    async update({ request, cookies }) {
+        const session = await ensureLoggedIn(cookies);
+        const data = await parseData(request, updateScehema);
+
+        if ("errors" in data) {
+            return fail(400, { validationError: data.errors });
+        }
+
+        const user = await prisma.user.update({
+            where: { id: session.id },
+            data: {
+                isMasculine: data.isMasculine === "on",
+                isFeminine: data.isFeminine === "on",
+            },
+            select: safeUserSelect
+        });
+
+        logger.info(`Updated user ${user.displayName}`, { user });
+        return user;
+    },
+
     async resetVotes({ cookies }) {
         const session = await ensureLoggedIn(cookies);
 

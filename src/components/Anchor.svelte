@@ -35,5 +35,5 @@ class="clickable"
 </a>
 
 <style lang="scss">
-    @import "./clickable.scss";
+    @use "./clickable.scss";
 </style>

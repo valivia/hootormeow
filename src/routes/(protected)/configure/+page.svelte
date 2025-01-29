@@ -2,107 +2,82 @@
     import Form from "components/Form.svelte";
     import Button from "components/Button.svelte";
     import { getUserImage, type ClientUser } from "lib/user";
-    import { SaveIcon, Trash2Icon } from "svelte-feather-icons";
-    import type { PageData } from "./$types";
     import { PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
+    import { ISave, ITrashCan } from "lib/icons";
+    import CategorySelect from "components/CategorySelect.svelte";
 
-    export let data: PageData;
-    let user = data.user;
-    let voteCount = data.voteCount;
+    let { data } = $props();
+
+    let { user } = data;
 
     let fileInput: HTMLInputElement;
-    let files: FileList | null = null;
-    let src: string | null;
+    let files: FileList | null = $state(null);
+    let src = $derived.by(() => {
+        if (files) return URL.createObjectURL(files[0]);
+        return getUserImage($user);
+    });
 
-    function onSuccess(user: ClientUser) {
-        $user.uploadedAt = user.uploadedAt;
+    function onSuccess(input: unknown) {
+        $user.uploadedAt = (input as ClientUser).uploadedAt;
         files = null;
     }
 
-    $: {
-        if (
-            files &&
-            files[0]?.size > Number(PUBLIC_MAX_FILE_SIZE) * 1024 * 1024
-        ) {
-            alert(`File is too large. Max size is ${PUBLIC_MAX_FILE_SIZE}MB.`);
-            files = null;
-        }
-    }
-
-    $: {
-        if (files) src = URL.createObjectURL(files?.[0]);
-        else src = getUserImage($user);
-    }
-
-    let loading = false;
+    let loading = $state(false);
 </script>
 
 <h1>{$user.displayName}</h1>
 <p>Please upload an image of yourself</p>
 
-<button on:click={() => fileInput.click()}>
+<button onclick={() => fileInput.click()}>
     <img {src} alt="user" />
 </button>
 
-<Form
-    {onSuccess}
-    action="/configure?/upload"
-    enctype="multipart/form-data"
-    bind:loading
->
+<Form action="/configure?/upload" enctype="multipart/form-data" bind:loading {onSuccess}>
     <input
         type="file"
         name="file"
         bind:this={fileInput}
-        bind:files
+        onchange={(event) => {
+            const file = event.currentTarget.files?.[0];
+            if (file && file.size > Number(PUBLIC_MAX_FILE_SIZE) * 1024 * 1024) {
+                alert(`File is too large. Max size is ${PUBLIC_MAX_FILE_SIZE}MB.`);
+                return;
+            }
+            files = event.currentTarget.files;
+        }}
         hidden
         accept="image/jpeg, image/png, image/webp, image/avif"
     />
 
     <fieldset>
         <Button type="submit" disabled={loading || files === null} icon>
-            <SaveIcon />
+            <ISave />
         </Button>
         {#if files}
-            <Button
-                type="button"
-                color="var(--theme-danger)"
-                disabled={loading}
-                icon
-                on:click={() => (files = null)}
-            >
-                <Trash2Icon />
+            <Button type="button" color="var(--theme-danger)" disabled={loading} icon on:click={() => (files = null)}>
+                <ITrashCan />
             </Button>
         {:else if $user.uploadedAt}
             <Form action="/configure?/delete" bind:loading {onSuccess}>
-                <Button
-                    type="submit"
-                    color="var(--theme-danger)"
-                    disabled={loading}
-                    icon
-                >
-                    <Trash2Icon />
+                <Button type="submit" color="var(--theme-danger)" disabled={loading} icon>
+                    <ITrashCan />
                 </Button>
             </Form>
         {/if}
     </fieldset>
 </Form>
 
+<CategorySelect {user} />
+
 <h2>Account management</h2>
 <section>
-    {#if voteCount > 0}
-        <Form
-            action="/configure?/resetVotes"
-            bind:loading
-            onSuccess={() => (voteCount = 0)}
-        >
+    {#if data.voteCount > 0}
+        <Form action="/configure?/resetVotes" bind:loading onSuccess={() => (data.voteCount = 0)}>
             <Button
                 type="submit"
                 color="var(--theme-danger)"
                 disabled={loading}
-                on:click={(event) =>
-                    confirm("Are you sure you want to reset your votes?") ||
-                    event.preventDefault()}
+                on:click={(event) => confirm("Are you sure you want to reset your votes?") || event.preventDefault()}
             >
                 Reset votes
             </Button>
@@ -113,9 +88,7 @@
             type="submit"
             color="var(--theme-danger)"
             disabled={loading}
-            on:click={(event) =>
-                confirm("Are you sure you want to delete your account?") ||
-                event.preventDefault()}
+            on:click={(event) => confirm("Are you sure you want to delete your account?") || event.preventDefault()}
         >
             Delete account
         </Button>

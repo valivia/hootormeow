@@ -80,6 +80,8 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
                 displayName: userJson.global_name,
                 userName: userJson.username,
                 avatar: userJson.avatar,
+                isFeminine: false,
+                isMasculine: false,
             }
         });
         logger.info(`User create: ${user.displayName} - ${userJson.id} (${ip})`, { user, ip });

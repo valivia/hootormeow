@@ -2,10 +2,7 @@
     import { DISCORD_AUTHORIZE_URL } from "lib/auth";
     import type { PageData } from "./$types";
 
-    import {
-        PUBLIC_DISCORD_CLIENT_ID,
-        PUBLIC_DISCORD_REDIRECT_URI,
-    } from "$env/static/public";
+    import { PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
 
     export let data: PageData;
     let { user } = data;
@@ -20,11 +17,25 @@
     const finalUrl = `${DISCORD_AUTHORIZE_URL}?${queryParams.toString()}`;
 </script>
 
-{#if user}
-    <h1>Welcome back, {user.displayName}!</h1>
-    <p>You are now logged in.</p>
-    <a href="/">Go back</a>
-{:else}
-    <h1>Log in to continue</h1>
-    <a href={finalUrl}>Log in</a>
-{/if}
+<main>
+    {#if user}
+        <h1>Welcome back, {user.displayName}!</h1>
+        <p>You are now logged in.</p>
+        <a href="/">Go back</a>
+    {:else}
+        <h1>Log in to continue</h1>
+        <a href={finalUrl}>Log in</a>
+    {/if}
+</main>
+
+<style lang="scss">
+    main {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-inline: auto;
+        max-width: 30rem;
+        padding: 1rem;
+        text-align: center;
+    }
+</style>

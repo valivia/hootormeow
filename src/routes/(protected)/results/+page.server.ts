@@ -23,10 +23,21 @@ export const load = (async ({ cookies }) => {
             ...safeUserSelect,
             votesReceived: true,
         },
+        where: {
+            votesReceived: { some: { targetId: session.id } },
+            OR: [
+                { isFeminine: true },
+                { isMasculine: true },
+            ],
+        }
     });
 
-    if (voteCount < data.length) {
-        error(403, { message: "You haven't voted for all users yet" });
+    if (voteCount < data.length - 1) {
+        return error(403, { message: "You haven't voted for all users yet" });
+    }
+
+    if (data.length == 0) {
+        return error(404, { message: "No results found" });
     }
 
     const results: UserWithVotes[] = data
@@ -50,10 +61,6 @@ export const load = (async ({ cookies }) => {
             };
         })
         .sort((a, b) => b.votes.total - a.votes.total);
-
-    if (results.length <= 0) {
-        fail(404);
-    }
 
     return { results };
 }) satisfies PageServerLoad;

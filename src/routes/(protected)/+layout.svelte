@@ -1,36 +1,32 @@
 <script lang="ts">
     import { getUserImage } from "lib/user";
-    import type { PageData } from "./$types";
-    import { page } from "$app/stores";
-    import { LogOutIcon } from "svelte-feather-icons";
+    import { page } from "$app/state";
+    import { ILogOut } from "lib/icons";
 
-    export let data: PageData;
+    let { data, children } = $props();
+
     let { user } = data;
-
-    $: src = getUserImage($user);
 </script>
 
 <nav>
-    <a href="/" aria-current={$page.url.pathname === "/"}> Home </a>
-    <a href="/vote" aria-current={$page.url.pathname === "/vote"}> Vote </a>
-    <a href="/results" aria-current={$page.url.pathname === "/results"}>
-        Results
-    </a>
+    <a href="/" aria-current={page.url.pathname === "/"}> Home </a>
+    <a href="/vote" aria-current={page.url.pathname === "/vote"}> Vote </a>
+    <a href="/results" aria-current={page.url.pathname === "/results"}> Results </a>
     <div class="spacer"></div>
     <a
         href="/auth/logout"
         class="logout"
-        on:click={(e) => confirm("Are you sure you want to log out?") || e.preventDefault()}
+        onclick={(e) => confirm("Are you sure you want to log out?") || e.preventDefault()}
     >
-        <LogOutIcon />
+        <ILogOut />
     </a>
-    <a href="/configure" aria-current={$page.url.pathname === "/configure"}>
-        <img {src} alt="User Avatar" />
+    <a href="/configure" aria-current={page.url.pathname === "/configure"}>
+        <img src={getUserImage($user)} alt="User Avatar" />
     </a>
 </nav>
 
 <main>
-    <slot />
+    {@render children()}
 </main>
 
 <style lang="scss">
@@ -56,7 +52,7 @@
 
         a {
             color: var(--theme-text);
-            text-decoration: underline;
+            text-decoration: none;
             font-size: clamp(1rem, 2vw, 1.3rem);
 
             &:not(:last-child) {
@@ -66,6 +62,7 @@
 
         a[aria-current="true"] {
             color: var(--theme-accent);
+            text-decoration: underline;
             cursor: default;
         }
     }

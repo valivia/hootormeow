@@ -1,9 +1,4 @@
-import {
-    HeartIcon,
-    ScissorsIcon,
-    HelpCircleIcon,
-    SlashIcon,
-} from "svelte-feather-icons";
+import { IHeart, IHelpCircle, IScissors, ISlash } from "./icons";
 
 export type Vote = typeof VoteType;
 export type VoteKey = keyof Vote;
@@ -12,25 +7,25 @@ export const VoteType = {
     date: {
         name: "Date",
         color: "var(--theme-success)",
-        icon: HeartIcon,
-        score: 1.5,
+        icon: IHeart,
+        score: 1,
     },
     smash: {
         name: "Smash",
         color: "var(--theme-success)",
-        icon: ScissorsIcon,
-        score: 1,
+        icon: IScissors,
+        score: 0.75,
     },
     maybe: {
         name: "Maybe",
         color: "var(--theme-warning)",
-        icon: HelpCircleIcon,
-        score: 0.5,
+        icon: IHelpCircle,
+        score: 0.25,
     },
     pass: {
         name: "Pass",
         color: "var(--theme-danger)",
-        icon: SlashIcon,
-        score: -.5,
+        icon: ISlash,
+        score: -0.25,
     },
 };

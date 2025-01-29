@@ -1,42 +1,46 @@
 generator client {
-  provider = "prisma-client-js"
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:../app.db"
+    provider = "sqlite"
+    url      = "file:../app.db"
 }
 
 model User {
-  id        String   @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+    id        String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  token String
+    token String
 
-  userName    String
-  displayName String
-  avatar      String?
-  uploadedAt  DateTime?
+    userName    String
+    displayName String
+    avatar      String?
+    uploadedAt  DateTime?
 
-  votesCasted   Vote[] @relation("castedVotes")
-  votesReceived Vote[] @relation("receivedVotes")
+    isMasculine Boolean @default(false)
+    isFeminine  Boolean @default(false)
 
-  @@unique(userName)
-  @@unique(token)
+    votesCasted   Vote[] @relation("castedVotes")
+    votesReceived Vote[] @relation("receivedVotes")
+
+    @@unique(userName)
+    @@unique(token)
 }
 
 model Vote {
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  targetId String
-  sourceId String
+    targetId String
+    sourceId String
 
-  vote String
+    vote String
 
-  target User @relation(fields: [targetId], references: [id], onDelete: Cascade, name: "receivedVotes")
-  source User @relation(fields: [sourceId], references: [id], onDelete: Cascade, name: "castedVotes")
+    target User @relation(fields: [targetId], references: [id], onDelete: Cascade, name: "receivedVotes")
+    source User @relation(fields: [sourceId], references: [id], onDelete: Cascade, name: "castedVotes")
 
-  @@id([sourceId, targetId])
+    @@id([sourceId, targetId])
 }

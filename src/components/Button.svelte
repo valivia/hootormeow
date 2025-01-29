@@ -37,5 +37,5 @@
 </button>
 
 <style lang="scss">
-    @import "./clickable.scss";
+    @use "./clickable.scss";
 </style>

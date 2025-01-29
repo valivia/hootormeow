@@ -24,6 +24,13 @@ export const load = (async ({ cookies }) => {
                 where: { sourceId: session.id },
             }
         },
+        where: {
+            id: { not: session.id },
+            OR: [
+                { isFeminine: true },
+                { isMasculine: true },
+            ],
+        },
         orderBy: { displayName: "asc" }
     });
 
@@ -45,8 +52,12 @@ export const load = (async ({ cookies }) => {
             a.vote === null ? 1 : b.vote === null ? -1 : 0
         );
 
-    if (!candidates) {
-        error(404, "No candidates found");
+    if (candidates.length === 0) {
+        return error(404, "No candidates found");
+    }
+
+    if (!session.isFeminine && !session.isMasculine) {
+        return error(403, "You must select atleast 1 category in the settings to vote");
     }
 
     return {

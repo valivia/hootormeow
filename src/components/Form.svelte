@@ -23,7 +23,8 @@
         alert(error);
     };
 
-    interface $$Props extends HTMLFormAttributes {
+    interface Props extends HTMLFormAttributes {
+        form?: HTMLFormElement;
         action: string;
         onSubmit?: SubmitFunction;
         onSuccess?: (data: unknown) => void;
@@ -32,18 +33,22 @@
         loading?: boolean;
         reset?: boolean;
         id?: string;
-        enctype?: string;
+        enctype?: "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain";
     }
 
-    export let action: $$Props["action"];
-    export let onSubmit: $$Props["onSubmit"] = undefined;
-    export let onSuccess: $$Props["onSuccess"] = () => {};
-    export let onFailure: $$Props["onFailure"] = defaultFailure;
-    export let onError: $$Props["onError"] = defaultFailure;
-    export let loading: $$Props["loading"] = false;
-    export let reset: $$Props["reset"] = false;
-    export let id: $$Props["id"] = undefined;
-    export let enctype: $$Props["enctype"] = undefined;
+    let {
+        action,
+        onSubmit = undefined,
+        onSuccess = () => {},
+        onFailure = defaultFailure,
+        onError = defaultFailure,
+        loading = $bindable(false),
+        form = $bindable(),
+        reset = false,
+        id = undefined,
+        enctype = undefined,
+        children,
+    }: Props = $props();
 
     const handleSubmit: SubmitFunction = () => {
         loading = true;
@@ -72,14 +77,10 @@
     };
 </script>
 
-<form
-    {id}
-    method="POST"
-    {action}
-    use:enhance={onSubmit ?? handleSubmit}
-    {enctype}
->
-    <slot />
+<form bind:this={form} {id} method="POST" {action} use:enhance={onSubmit ?? handleSubmit} {enctype}>
+    {#if children}
+        {@render children()}
+    {/if}
 </form>
 
 <style lang="scss">

@@ -31,7 +31,6 @@
         img {
             width: 96px;
             height: 96px;
-            border: 3px solid var(--theme-accent);
             border-radius: 100vw;
         }
     }
