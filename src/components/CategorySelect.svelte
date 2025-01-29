@@ -31,8 +31,7 @@
 </script>
 
 <h2>Category</h2>
-<!-- Submit form on edit -->
-<p>Please select at least one category to participate.</p>
+<p>Please select what leaderboard category you'd like to participate in.</p>
 <Form action="/configure?/update" {onSuccess} bind:loading bind:form>
     <div class="category">
         <label>

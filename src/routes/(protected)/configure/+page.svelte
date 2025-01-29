@@ -48,7 +48,6 @@
         hidden
         accept="image/jpeg, image/png, image/webp, image/avif"
     />
-
     <fieldset>
         <Button type="submit" disabled={loading || files === null} icon>
             <ISave />
@@ -58,14 +57,14 @@
                 <ITrashCan />
             </Button>
         {:else if $user.uploadedAt}
-            <Form action="/configure?/delete" bind:loading {onSuccess}>
-                <Button type="submit" color="var(--theme-danger)" disabled={loading} icon>
-                    <ITrashCan />
-                </Button>
-            </Form>
+            <Button form="avatarDelete" type="submit" color="var(--theme-danger)" disabled={loading} icon>
+                <ITrashCan />
+            </Button>
         {/if}
     </fieldset>
 </Form>
+
+<Form id="avatarDelete" action="/configure?/delete" bind:loading {onSuccess}></Form>
 
 <CategorySelect {user} />
 
