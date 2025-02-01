@@ -1,7 +1,7 @@
 import { type Cookies, redirect } from "@sveltejs/kit";
 import { prisma } from "./prisma";
 
-import type { ClientUser } from "lib/user";
+import { safeUserSelect, type ClientUser } from "lib/user";
 
 export async function loggedInUser(cookies: Cookies): Promise<ClientUser | null> {
     const token = cookies.get("sessionToken");
@@ -9,6 +9,7 @@ export async function loggedInUser(cookies: Cookies): Promise<ClientUser | null>
 
     return await prisma.user.findUnique({
         where: { token },
+        select: safeUserSelect,
     });
 }
 

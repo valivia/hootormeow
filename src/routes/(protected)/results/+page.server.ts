@@ -22,6 +22,7 @@ export const load = (async ({ cookies }) => {
         select: {
             ...safeUserSelect,
             votesReceived: true,
+            votesCasted: true,
         },
         where: {
             // votesReceived: { some: {} },
@@ -31,6 +32,8 @@ export const load = (async ({ cookies }) => {
             ],
         }
     });
+
+    const usersVoted = data.filter((user) => user.votesCasted.length > 0).length;
 
     if (voteCount < data.length - 1) {
         return error(403, { message: "You haven't voted for all users yet" });
@@ -57,10 +60,16 @@ export const load = (async ({ cookies }) => {
 
             return {
                 ...user,
+                votesCasted: undefined,
+                votesReceived: undefined,
                 votes,
             };
         })
         .sort((a, b) => b.votes.total - a.votes.total);
 
-    return { results };
+    return {
+        results,
+        usersVoted,
+        users: results.length,
+    };
 }) satisfies PageServerLoad;
