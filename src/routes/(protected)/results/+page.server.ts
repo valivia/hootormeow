@@ -1,15 +1,15 @@
 import { prisma } from "lib/server/prisma";
 import type { PageServerLoad } from "./$types";
-import { error, fail } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 import { safeUserSelect, type UserWithVotes } from "lib/user";
 import { ensureLoggedIn } from "lib/server/session";
-import { PUBLIC_SHOW_RESULTS } from "$env/static/public";
+import { PUBLIC_SHOW_RESULTS, PUBLIC_OWNER_ID } from "$env/static/public";
 import { VoteType, type VoteKey } from "lib/vote";
 
 export const load = (async ({ cookies }) => {
     const session = await ensureLoggedIn(cookies);
 
-    if (PUBLIC_SHOW_RESULTS !== "true") {
+    if (PUBLIC_SHOW_RESULTS !== "true" && PUBLIC_OWNER_ID !== session.id) {
         error(403, { message: "The results are currently hidden" });
     }
 
@@ -24,7 +24,7 @@ export const load = (async ({ cookies }) => {
             votesReceived: true,
         },
         where: {
-            votesReceived: { some: { targetId: session.id } },
+            // votesReceived: { some: {} },
             OR: [
                 { isFeminine: true },
                 { isMasculine: true },

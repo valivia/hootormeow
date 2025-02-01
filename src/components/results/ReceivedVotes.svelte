@@ -1,13 +1,14 @@
 <script lang="ts">
     import { VoteType } from "lib/vote";
     import type { UserWithVotes } from "lib/user";
-    import type { SvelteComponent } from "svelte";
+    import type { Component } from "svelte";
+    import type { SVGAttributes } from "svelte/elements";
     export let user: UserWithVotes;
 
     // Awful code
     const VoteTypes = Object.entries(VoteType) as [
         keyof UserWithVotes["votes"],
-        { color: string; icon: typeof SvelteComponent },
+        { color: string; icon: Component<SVGAttributes<SVGSVGElement>> },
     ][];
 </script>
 

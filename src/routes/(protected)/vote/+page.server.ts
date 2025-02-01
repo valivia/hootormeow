@@ -7,12 +7,12 @@ import { VoteType } from "lib/vote";
 import { ensureLoggedIn } from "lib/server/session";
 import { logger } from "lib/server/logger";
 import { safeUserSelect } from "lib/user";
-import { PUBLIC_ALLOW_VOTING } from "$env/static/public";
+import { PUBLIC_ALLOW_VOTING, PUBLIC_OWNER_ID } from "$env/static/public";
 
 export const load = (async ({ cookies }) => {
     const session = await ensureLoggedIn(cookies);
 
-    if (PUBLIC_ALLOW_VOTING !== "true") {
+    if (PUBLIC_ALLOW_VOTING !== "true" && PUBLIC_OWNER_ID !== session.id) {
         error(403, { message: "Voting is currently disabled, please add a picture in the meantime!" });
     }
 
@@ -68,6 +68,7 @@ export const load = (async ({ cookies }) => {
 
 const schema = y.object({
     vote: y.string().oneOf(Object.keys(VoteType)).required(),
+    time: y.number().optional(),
     targetId: y.string().required(),
 });
 
@@ -88,9 +89,10 @@ export const actions = {
             where: { sourceId_targetId: { sourceId, targetId } },
             create: {
                 vote, source: { connect: { id: sourceId } },
+                time: data.time,
                 target: { connect: { id: targetId } },
             },
-            update: { vote },
+            update: { vote, timesChanged: { increment: 1 } },
             include: { source: true, target: true }
         });
 

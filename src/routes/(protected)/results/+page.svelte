@@ -4,7 +4,7 @@
     let { data } = $props();
     let { results } = data;
 
-    let category = $state("feminine");
+    let category = $state("both");
 
     $inspect(category);
     $inspect(results);

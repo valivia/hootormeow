@@ -2,7 +2,7 @@
     import Form from "components/Form.svelte";
     import Button from "components/Button.svelte";
     import { getUserImage, type ClientUser } from "lib/user";
-    import { PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
+    import { PUBLIC_ALLOW_CHANGE, PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
     import { ISave, ITrashCan } from "lib/icons";
     import CategorySelect from "components/CategorySelect.svelte";
 
@@ -10,7 +10,7 @@
 
     let { user } = data;
 
-    let fileInput: HTMLInputElement;
+    let fileInput: HTMLInputElement | null = $state(null);
     let files: FileList | null = $state(null);
     let src = $derived.by(() => {
         if (files) return URL.createObjectURL(files[0]);
@@ -26,45 +26,55 @@
 </script>
 
 <h1>{$user.displayName}</h1>
-<p>Please upload an image of yourself</p>
+{#if PUBLIC_ALLOW_CHANGE === "true"}
+    <p>Please upload an image of yourself</p>
+{/if}
 
-<button onclick={() => fileInput.click()}>
+<button onclick={() => fileInput?.click()} disabled={PUBLIC_ALLOW_CHANGE !== "true"}>
     <img {src} alt="user" />
 </button>
 
-<Form action="/configure?/upload" enctype="multipart/form-data" bind:loading {onSuccess}>
-    <input
-        type="file"
-        name="file"
-        bind:this={fileInput}
-        onchange={(event) => {
-            const file = event.currentTarget.files?.[0];
-            if (file && file.size > Number(PUBLIC_MAX_FILE_SIZE) * 1024 * 1024) {
-                alert(`File is too large. Max size is ${PUBLIC_MAX_FILE_SIZE}MB.`);
-                return;
-            }
-            files = event.currentTarget.files;
-        }}
-        hidden
-        accept="image/jpeg, image/png, image/webp, image/avif"
-    />
-    <fieldset>
-        <Button type="submit" disabled={loading || files === null} icon>
-            <ISave />
-        </Button>
-        {#if files}
-            <Button type="button" color="var(--theme-danger)" disabled={loading} icon on:click={() => (files = null)}>
-                <ITrashCan />
+{#if PUBLIC_ALLOW_CHANGE === "true"}
+    <Form action="/configure?/upload" enctype="multipart/form-data" bind:loading {onSuccess}>
+        <input
+            type="file"
+            name="file"
+            bind:this={fileInput}
+            onchange={(event) => {
+                const file = event.currentTarget.files?.[0];
+                if (file && file.size > Number(PUBLIC_MAX_FILE_SIZE) * 1024 * 1024) {
+                    alert(`File is too large. Max size is ${PUBLIC_MAX_FILE_SIZE}MB.`);
+                    return;
+                }
+                files = event.currentTarget.files;
+            }}
+            hidden
+            accept="image/jpeg, image/png, image/webp, image/avif"
+        />
+        <fieldset>
+            <Button type="submit" disabled={loading || files === null} icon>
+                <ISave />
             </Button>
-        {:else if $user.uploadedAt}
-            <Button form="avatarDelete" type="submit" color="var(--theme-danger)" disabled={loading} icon>
-                <ITrashCan />
-            </Button>
-        {/if}
-    </fieldset>
-</Form>
+            {#if files}
+                <Button
+                    type="button"
+                    color="var(--theme-danger)"
+                    disabled={loading}
+                    icon
+                    on:click={() => (files = null)}
+                >
+                    <ITrashCan />
+                </Button>
+            {:else if $user.uploadedAt}
+                <Button form="avatarDelete" type="submit" color="var(--theme-danger)" disabled={loading} icon>
+                    <ITrashCan />
+                </Button>
+            {/if}
+        </fieldset>
+    </Form>
 
-<Form id="avatarDelete" action="/configure?/delete" bind:loading {onSuccess}></Form>
+    <Form id="avatarDelete" action="/configure?/delete" bind:loading {onSuccess}></Form>
+{/if}
 
 <CategorySelect {user} />
 
@@ -106,14 +116,15 @@
         height: $size;
         padding: 0;
 
-        border-radius: 50%;
+        border: none;
+        border-radius: var(--border-radius);
         overflow: hidden;
 
-        outline: 2px solid currentColor;
+        outline: 1px solid currentColor;
         transition: all 100ms ease-in-out;
 
-        &:hover,
-        &:focus {
+        &:hover:not(:disabled),
+        &:focus:not(:disabled) {
             outline-offset: 0.5em;
             color: var(--theme-accent);
         }

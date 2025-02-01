@@ -103,7 +103,7 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
         logger.info(`User log in: ${user.displayName} - ${user.id} (${ip})`, { user, ip });
     }
 
-    const tokenExpirationDate = new Date(Date.now() + (60 * 60 * 24 * 1000));
+    const tokenExpirationDate = new Date(Date.now() + (60 * 60 * 24 * 7 * 1000));
     cookies.set("sessionToken", user.token, { path: "/", expires: tokenExpirationDate });
     redirect(302, "/");
 };

@@ -11,6 +11,7 @@
     let { candidates } = data;
     let currentUserIndex = $state(0);
     let voteCount = $state(0);
+    let startTime = $state(new Date());
 
     // Find the first candidate that has not been voted on
     for (let i = 0; i < candidates.length; i++) {
@@ -45,6 +46,12 @@
         } else if (currentUserIndex >= candidates.length) {
             currentUserIndex = candidates.length - 1;
         }
+        startTime = new Date();
+    }
+
+    function manipulation(formData: FormData) {
+        formData.append("time", String(new Date().getTime() - startTime.getTime()));
+        return formData;
     }
 
     let currentUser = $derived(candidates[currentUserIndex]);
@@ -59,14 +66,14 @@
 
     let categories = $derived.by(() => {
         let categories = new Set<string>();
-        currentUser.isFeminine && categories.add("Feminine");
-        currentUser.isMasculine && categories.add("Masculine");
+        if (currentUser.isFeminine) categories.add("Feminine");
+        if (currentUser.isMasculine) categories.add("Masculine");
         return categories;
     });
 </script>
 
 <div class="wrapper">
-    <Form action="/vote?/castVote" {onSuccess} bind:loading>
+    <Form action="/vote?/castVote" {onSuccess} {manipulation} bind:loading>
         <!-- Name -->
         <header>
             <h1>{currentUser.displayName}</h1>

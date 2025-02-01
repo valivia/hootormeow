@@ -3,6 +3,7 @@
     import Form from "./Form.svelte";
     import type { Writable } from "svelte/store";
     import Button from "./Button.svelte";
+    import { PUBLIC_ALLOW_CHANGE } from "$env/static/public";
 
     interface Props {
         user: Writable<ClientUser>;
@@ -28,27 +29,36 @@
 
     let atleastOneSelected = $derived(isFeminine || isMasculine);
     let hasChanged = $derived(isFeminine !== $user.isFeminine || isMasculine !== $user.isMasculine);
+
+    let isDisabled = PUBLIC_ALLOW_CHANGE !== "true";
 </script>
 
 <h2>Category</h2>
-<p>Please select what leaderboard category you'd like to participate in.</p>
+{#if !isDisabled}
+    <p>Please select what leaderboard category you'd like to participate in.</p>
+{/if}
 <Form action="/configure?/update" {onSuccess} bind:loading bind:form>
     <div class="category">
         <label>
-            <input type="checkbox" name="isFeminine" bind:checked={isFeminine} />
+            <input type="checkbox" name="isFeminine" bind:checked={isFeminine} disabled={isDisabled} />
             Feminine
         </label>
 
         <label>
-            <input type="checkbox" name="isMasculine" bind:checked={isMasculine} />
+            <input type="checkbox" name="isMasculine" bind:checked={isMasculine} disabled={isDisabled} />
             Masculine
         </label>
-
-        <Button type="submit" disabled={loading || !atleastOneSelected || !hasChanged} grow={false}>Save</Button>
+        {#if !isDisabled}
+            <Button type="submit" disabled={loading || !atleastOneSelected || !hasChanged} grow={false}>Save</Button>
+        {/if}
     </div>
 </Form>
 
 <style lang="scss">
+    p {
+        text-align: center;
+    }
+
     .category {
         display: flex;
         flex-direction: column;

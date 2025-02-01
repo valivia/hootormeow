@@ -30,6 +30,7 @@
         onSuccess?: (data: unknown) => void;
         onFailure?: (data: unknown) => void;
         onError?: (data: unknown) => void;
+        manipulation?: (data: FormData) => FormData;
         loading?: boolean;
         reset?: boolean;
         id?: string;
@@ -42,6 +43,7 @@
         onSuccess = () => {},
         onFailure = defaultFailure,
         onError = defaultFailure,
+        manipulation = undefined,
         loading = $bindable(false),
         form = $bindable(),
         reset = false,
@@ -50,8 +52,10 @@
         children,
     }: Props = $props();
 
-    const handleSubmit: SubmitFunction = () => {
+    const handleSubmit: SubmitFunction = (input) => {
         loading = true;
+
+        if (manipulation) input.formData = manipulation(input.formData);
 
         return async ({ update, result }) => {
             loading = false;

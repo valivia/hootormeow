@@ -37,7 +37,9 @@ model Vote {
     targetId String
     sourceId String
 
-    vote String
+    vote         String
+    time         Int?
+    timesChanged Int    @default(0)
 
     target User @relation(fields: [targetId], references: [id], onDelete: Cascade, name: "receivedVotes")
     source User @relation(fields: [sourceId], references: [id], onDelete: Cascade, name: "castedVotes")
