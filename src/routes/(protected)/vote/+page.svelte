@@ -81,7 +81,9 @@
         </header>
 
         <!-- image -->
-        <img {src} alt="user" />
+        {#key currentUser.id}
+            <img {src} alt="user" />
+        {/key}
 
         {currentUserIndex + 1}
 

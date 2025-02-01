@@ -8,24 +8,24 @@ export const VoteType = {
         name: "Date",
         color: "var(--theme-success)",
         icon: IHeart,
-        score: 1,
+        score: 3.25,
     },
     smash: {
         name: "Smash",
         color: "var(--theme-success)",
         icon: IScissors,
-        score: 0.75,
+        score: 2.5,
     },
     maybe: {
         name: "Maybe",
         color: "var(--theme-warning)",
         icon: IHelpCircle,
-        score: 0.25,
+        score: 1.25,
     },
     pass: {
         name: "Pass",
         color: "var(--theme-danger)",
         icon: ISlash,
-        score: -0.25,
+        score: 0,
     },
 };

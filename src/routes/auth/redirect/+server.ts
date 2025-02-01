@@ -85,15 +85,10 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
             }
         });
         logger.info(`User create: ${user.displayName} - ${userJson.id} (${ip})`, { user, ip });
-    } else if (
-        userJson.avatar !== user.avatar
-        || userJson.global_name !== user.displayName
-        || userJson.username !== user.userName
-    ) {
+    } else if (userJson.avatar !== user.avatar || userJson.username !== user.userName) {
         user = await prisma.user.update({
             where: { id: userJson.id },
             data: {
-                displayName: userJson.global_name,
                 userName: userJson.username,
                 avatar: userJson.avatar,
             }

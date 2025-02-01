@@ -1,5 +1,6 @@
 <script lang="ts">
     import UserResult from "components/results/UserResult.svelte";
+    import type { UserWithVotesDisplay } from "lib/user.js";
 
     let { data } = $props();
     let { results } = data;
@@ -9,16 +10,42 @@
     $inspect(category);
     $inspect(results);
 
-    let displayedUsers = $derived.by(() => {
-        return results.filter((user) => {
-            if (category === "feminine") {
-                return user.isFeminine;
-            } else if (category === "masculine") {
-                return user.isMasculine;
-            } else {
+    let displayedUsers: UserWithVotesDisplay[] = $derived.by(() => {
+        let lastIndex = 0;
+        const output = results
+            // Filter by category
+            .filter((user) => {
+                if (category === "feminine") {
+                    return user.isFeminine;
+                } else if (category === "masculine") {
+                    return user.isMasculine;
+                }
                 return true;
-            }
-        });
+            })
+            // Add rank and contested status
+            .map((user, i, arr) => {
+                const lastUser = i > 0 ? arr[i - 1] : null;
+                const nextUser = i < arr.length - 1 ? arr[i + 1] : null;
+                const sameAsLast = lastUser?.votes.total === user.votes.total;
+                const sameAsNext = nextUser?.votes.total === user.votes.total;
+                const isContested = sameAsLast || sameAsNext;
+
+                let rank = lastIndex;
+                if (!sameAsLast) {
+                    rank = lastIndex + 1;
+                }
+                lastIndex = rank;
+
+                return {
+                    ...user,
+                    rank,
+                    isContested,
+                };
+            });
+
+        lastIndex = 0;
+
+        return output;
     });
 </script>
 
@@ -40,8 +67,8 @@
 </section>
 
 <ol>
-    {#each displayedUsers as user, index (user.id)}
-        <UserResult {user} {index} />
+    {#each displayedUsers as user (user.id + user.rank)}
+        <UserResult {user} />
     {/each}
 </ol>
 
@@ -63,7 +90,8 @@
             padding: 0.3rem 1rem;
             font-weight: 600;
 
-            &:has(input:checked), &:hover {
+            &:has(input:checked),
+            &:hover {
                 background-color: var(--theme-text);
                 color: var(--theme-primary);
             }

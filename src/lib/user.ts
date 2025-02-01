@@ -32,3 +32,8 @@ export type UserWithVotes = ClientUser & {
         [K in VoteKey | "total"]: number;
     }
 }
+
+export type UserWithVotesDisplay = UserWithVotes & {
+    rank: number;
+    isContested: boolean;
+}
