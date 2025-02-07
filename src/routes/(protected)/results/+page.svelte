@@ -26,8 +26,8 @@
             .map((user, i, arr) => {
                 const lastUser = i > 0 ? arr[i - 1] : null;
                 const nextUser = i < arr.length - 1 ? arr[i + 1] : null;
-                const sameAsLast = lastUser?.votes.total === user.votes.total;
-                const sameAsNext = nextUser?.votes.total === user.votes.total;
+                const sameAsLast = lastUser?.votes.total.toFixed(1) === user.votes.total.toFixed(1);
+                const sameAsNext = nextUser?.votes.total.toFixed(1) === user.votes.total.toFixed(1);
                 const isContested = sameAsLast || sameAsNext;
 
                 let rank = lastIndex;
@@ -50,6 +50,8 @@
 </script>
 
 <h1>Results</h1>
+
+{data.usersVoted}/{data.users} users have voted
 
 <section class="selector">
     <label>

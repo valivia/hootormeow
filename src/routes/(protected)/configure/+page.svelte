@@ -2,7 +2,7 @@
     import Form from "components/Form.svelte";
     import Button from "components/Button.svelte";
     import { getUserImage, type ClientUser } from "lib/user";
-    import { PUBLIC_ALLOW_CHANGE, PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
+    import { PUBLIC_ALLOW_CHANGE, PUBLIC_ALLOW_SIGNUP, PUBLIC_MAX_FILE_SIZE } from "$env/static/public";
     import { ISave, ITrashCan } from "lib/icons";
     import CategorySelect from "components/CategorySelect.svelte";
 
@@ -28,6 +28,8 @@
 <h1>{$user.displayName}</h1>
 {#if PUBLIC_ALLOW_CHANGE === "true"}
     <p>Please upload an image of yourself</p>
+{:else}
+    <p>Profile editing is currently disabled</p>
 {/if}
 
 <button onclick={() => fileInput?.click()} disabled={PUBLIC_ALLOW_CHANGE !== "true"}>
@@ -97,7 +99,12 @@
             type="submit"
             color="var(--theme-danger)"
             disabled={loading}
-            on:click={(event) => confirm("Are you sure you want to delete your account?") || event.preventDefault()}
+            on:click={(event) =>
+                confirm(
+                    "Are you sure you want to delete your account?" + PUBLIC_ALLOW_SIGNUP !== "true"
+                        ? " sign up is currently disabled, you will NOT be able to make a new account."
+                        : "",
+                ) || event.preventDefault()}
         >
             Delete account
         </Button>

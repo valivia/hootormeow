@@ -19,7 +19,7 @@
         <h3><span>{rank}.</span> {user.displayName}</h3>
         <ReceivedVotes {user} />
     </div>
-    <div class="total" class:isContested>{user.votes.total}</div>
+    <div class="total" class:isContested>{user.votes.total.toFixed(1)}</div>
 </li>
 
 <style lang="scss">

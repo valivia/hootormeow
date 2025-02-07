@@ -33,7 +33,7 @@ export const load = (async ({ cookies }) => {
         }
     });
 
-    const usersVoted = data.filter((user) => user.votesCasted.length > 0).length;
+    const usersVoted = data.filter((user) => user.votesCasted.length).length;
 
     if (voteCount < data.length - 1) {
         return error(403, { message: "You haven't voted for all users yet" });

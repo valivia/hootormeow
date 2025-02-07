@@ -6,26 +6,26 @@ export type VoteKey = keyof Vote;
 export const VoteType = {
     date: {
         name: "Date",
-        color: "var(--theme-success)",
+        color: "#6cb16c",
         icon: IHeart,
-        score: 3.25,
+        score: 3.2,
     },
     smash: {
         name: "Smash",
-        color: "var(--theme-success)",
+        color: "#839b4e",
         icon: IScissors,
-        score: 2.5,
+        score: 2.3,
     },
     maybe: {
         name: "Maybe",
         color: "var(--theme-warning)",
         icon: IHelpCircle,
-        score: 1.25,
+        score: 1.2,
     },
     pass: {
         name: "Pass",
         color: "var(--theme-danger)",
         icon: ISlash,
-        score: 0,
+        score: -0.1,
     },
 };
