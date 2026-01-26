@@ -13,3 +13,4 @@ logs
 static/media
 media
 *.db
+generated/

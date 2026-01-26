@@ -1,91 +1,119 @@
-@use "styles/abstracts" as *;
-
 @font-face {
-    font-family: "raleway";
-    src: url("/raleway-base.ttf");
+    font-family: "dosis";
+    src: url("/dosis.ttf");
     font-display: swap;
 }
 
-$font: "raleway", Helvetica, sans-serif;
+$font: "dosis", Helvetica, sans-serif;
 
-:global(:root) {
-    @each $name, $color in $colors {
-        --color-#{"" + $name}: #{$color};
-    }
-
-    --content-width: min(100%, 90ch);
+:root {
+    --content-width: min(100%, clamp(40ch, 30vw, 50ch));
     --border-width: 2px;
     --border-radius: 0.5rem;
 
-    --theme-text: var(--color-white);
+    --theme-text: oklch(9.26% 0 296.81);
 
-    --theme-accent: var(--color-gold);
-    --theme-danger: var(--color-red);
-    --theme-warning: var(--color-gold);
-    --theme-success: #6cb16c;
+    --theme-accent: oklch(70% 0.1206 340.574);
+    --theme-danger: oklch(70% 0.19062 24.396);
 
-    --theme-primary: var(--color-gray-dark);
-    --theme-secondary: var(--color-gray);
-    --theme-tertiary: var(--color-black);
+    --theme-primary: lch(94% 0.01 296.81);
+    --theme-secondary: oklch(99.107% 0.00011 271.152);
+    --theme-tertiary: oklch(54.863% 0.00006 271.152);
+
+    --vote-smash: var(--theme-accent);
+    --vote-favourite: oklch(73.245% 0.12161 81.455);
+    --vote-pass: oklch(70% 0.15 24.396);
+
+    --theme-accent-hover: oklch(from var(--theme-accent) calc(l + 0.1) c h);
+    --theme-accent-active: oklch(from var(--theme-accent) calc(l + 0.05) c h);
 }
 
-:global(*) {
+* {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
 
     font-family: $font;
-    font-feature-settings:
-        "pnum" on,
-        "lnum" on;
 }
 
-:global(html, body) {
+html,
+body {
     max-width: 100vw;
     color-scheme: dark light;
+}
 
+html {
     color: var(--theme-text);
-}
-
-:global(body) {
-    min-height: 100dvh;
-    padding: 1rem;
-}
-
-:global(html) {
     background-color: var(--theme-primary);
+
+    scrollbar-gutter: stable both-edges;
+
+    &[data-theme="dark"] {
+        --theme: dark;
+        --theme-text: oklch(90% 0.05 296.81);
+
+        --theme-primary: oklch(10% 0.03 296.81);
+        --theme-secondary: oklch(15% 0.02 271.152);
+        --theme-tertiary: oklch(40% 0.00006 271.152);
+
+        --theme-accent: oklch(57.85% 0.15817 342.426);
+
+        --theme-danger: oklch(70% 0.19062 24.396);
+
+        --vote-smash: var(--theme-accent);
+        --vote-favourite: oklch(79.599% 0.11126 83.233);
+        --vote-pass: oklch(59.437% 0.14221 25.429);
+    }
 }
 
-:global(::-webkit-scrollbar) {
+body {
+    min-height: 100dvh;
+    padding-inline: 1.5rem;
+    padding-block: 1.5rem 4rem;
+}
+
+::-webkit-scrollbar {
     width: 5px;
 }
 
-:global(::-webkit-scrollbar-thumb) {
+::-webkit-scrollbar-thumb {
     background: #555;
     border-radius: 10px;
 }
 
-:global(::-webkit-scrollbar-track) {
+::-webkit-scrollbar-track {
     background: #222;
     border-radius: 10px;
 }
 
-:global(*::selection) {
+*::selection {
     background-color: var(--theme-accent);
     color: var(--theme-primary);
 }
 
-:global(a) {
+a {
     color: var(--theme-accent);
+
+    &[aria-disabled="true"] {
+        pointer-events: none;
+        cursor: default;
+        opacity: 0.5;
+    }
 }
 
-:global(h1, h2, h3, h4, h5, h6) {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 500;
     line-height: 1.2;
 }
 
-:global(input, textarea, select) {
-    font-family: $font;
+input,
+textarea,
+select {
     font-size: 0.8rem;
     color: var(--theme-text);
     background-color: transparent;
@@ -93,4 +121,13 @@ $font: "raleway", Helvetica, sans-serif;
     border-radius: var(--border-radius);
     padding: 0.5rem;
     cursor: pointer;
+}
+
+option {
+    font-weight: bold;
+    background-color: var(--theme-primary);
+}
+
+fieldset {
+    border: none;
 }

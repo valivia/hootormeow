@@ -1,31 +1,31 @@
-import { IHeart, IHelpCircle, IScissors, ISlash } from "./icons";
+import type { Component } from "svelte";
+import { IHeart, ISlash, IStar } from "./icons";
+import type { SVGAttributes } from "svelte/elements";
 
-export type Vote = typeof VoteType;
-export type VoteKey = keyof Vote;
+export type Vote = typeof voteType;
 
-export const VoteType = {
-    date: {
-        name: "Date",
-        color: "#6cb16c",
-        icon: IHeart,
-        score: 3.2,
+export enum VoteKey {
+    favourite = "favourite",
+    smash = "smash",
+    pass = "pass",
+}
+
+export type VoteType = Record<VoteKey, { score: number; color: string, icon: Component<SVGAttributes<SVGSVGElement>> }>;
+
+export const voteType: VoteType = {
+    favourite: {
+        score: 41,
+        color: "var(--vote-favourite)",
+        icon: IStar,
     },
     smash: {
-        name: "Smash",
-        color: "#839b4e",
-        icon: IScissors,
-        score: 2.3,
-    },
-    maybe: {
-        name: "Maybe",
-        color: "var(--theme-warning)",
-        icon: IHelpCircle,
-        score: 1.2,
+        score: 23,
+        color: "var(--vote-smash)",
+        icon: IHeart,
     },
     pass: {
-        name: "Pass",
-        color: "var(--theme-danger)",
+        score: -2,
+        color: "var(--vote-pass)",
         icon: ISlash,
-        score: -0.1,
     },
 };

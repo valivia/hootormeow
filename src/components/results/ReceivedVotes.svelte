@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { VoteType } from "lib/vote";
+    import { voteType } from "lib/vote";
     import type { UserWithVotes } from "lib/user";
     import type { Component } from "svelte";
     import type { SVGAttributes } from "svelte/elements";
     export let user: UserWithVotes;
 
     // Awful code
-    const VoteTypes = Object.entries(VoteType) as [
+    const VoteTypes = Object.entries(voteType) as [
         keyof UserWithVotes["votes"],
         { color: string; icon: Component<SVGAttributes<SVGSVGElement>> },
     ][];
@@ -31,13 +31,15 @@
         align-items: center;
     }
     ul {
-        font-size: clamp(0.8rem, 3vw, 1rem);
+        font-size: 0.9rem;
         list-style: none;
         gap: 0.7em;
     }
 
     li {
-        gap: 0.2em;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         :global(> svg) {
             width: 1.2em;
