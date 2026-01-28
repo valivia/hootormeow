@@ -1,4 +1,4 @@
-import { PUBLIC_MEDIA_PATH, PUBLIC_OWNER_ID } from "$env/static/public";
+import { PUBLIC_OWNER_ID } from "$env/static/public";
 import { env } from "$env/dynamic/public";
 import type { VoteKey } from "./vote";
 import type { User } from "@prisma/client";
@@ -10,7 +10,7 @@ type UserImageInput = {
 }
 
 export function getUserImage(user: UserImageInput) {
-    if (user.uploadedAt) return `${PUBLIC_MEDIA_PATH}/${user.id}.jpg?uploadedAt=${Number(user.uploadedAt)}`
+    if (user.uploadedAt) return `avatar/${user.id}?uploadedAt=${Number(user.uploadedAt)}`
     else return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}?size=4096`;
 
 }
@@ -35,13 +35,15 @@ export function canSignUp(user: ClientUser) {
 }
 
 export function canVote(user: ClientUser) {
+    if (user.hasFinishedSetup === false) return false;
     if (env.PUBLIC_ALLOW_VOTING === "true") return true;
     else return user.allowVotingOverride || isAdmin(user);
 }
 
 export function canViewResults(user: ClientUser) {
+    if (user.hasFinishedSetup === false) return false;
     if (env.PUBLIC_ALLOW_VIEWING_RESULTS === "true") return true;
-    else return isAdmin(user);
+    else return user.allowResultViewingOverride || isAdmin(user);
 }
 
 export function isAdmin(user: ClientUser) {
