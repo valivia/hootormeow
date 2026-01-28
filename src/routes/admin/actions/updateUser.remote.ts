@@ -2,8 +2,8 @@ import * as v from "valibot";
 import { form } from "$app/server";
 import { prisma } from "lib/server/prisma";
 import { error } from "@sveltejs/kit";
-import { info } from "console";
 import { ensureLoggedIn } from "lib/server/session";
+import { logger } from "lib/server/logger";
 
 export const updateUser = form(
     v.object({
@@ -11,9 +11,10 @@ export const updateUser = form(
         allowSetupOverride: v.optional(v.boolean(), false),
         allowSignupOverride: v.optional(v.boolean(), false),
         allowVotingOverride: v.optional(v.boolean(), false),
+        allowResultViewingOverride: v.optional(v.boolean(), false),
         displayName: v.optional(v.string()),
     }),
-    async ({ id, allowSetupOverride, allowSignupOverride, allowVotingOverride, displayName }) => {
+    async ({ id, allowSetupOverride, allowSignupOverride, allowVotingOverride, allowResultViewingOverride, displayName }) => {
         ensureLoggedIn(true);
 
         let user = await prisma.user.findUnique({
@@ -30,11 +31,12 @@ export const updateUser = form(
                 allowSetupOverride,
                 allowSignupOverride,
                 allowVotingOverride,
-                displayName: displayName || user.userName,
+                allowResultViewingOverride,
+                displayName: displayName,
             }
         })
 
-        info(`🛠️ Updated user ${user.displayName} (${user.id})`);
+        logger.info(`🛠️  Updated user ${user.displayName} (${user.id})`);
 
         return user;
     });

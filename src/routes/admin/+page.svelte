@@ -20,8 +20,14 @@
     <ul>
         {#each users as user}
             {@const modifyUser = updateUser.for(user.id)}
-            {@const { id, allowSetupOverride, allowSignupOverride, allowVotingOverride, displayName } =
-                modifyUser.fields}
+            {@const {
+                id,
+                allowSetupOverride,
+                allowSignupOverride,
+                allowVotingOverride,
+                allowResultViewingOverride,
+                displayName,
+            } = modifyUser.fields}
             <li data-hasFinishedSetup={user.hasFinishedSetup}>
                 <h2>{user.displayName}</h2>
                 <form
@@ -75,6 +81,14 @@
                     <label>
                         Allow voting:
                         <input {...allowVotingOverride.as("checkbox")} checked={user.allowVotingOverride} />
+                    </label>
+
+                    <label>
+                        Allow result viewing:
+                        <input
+                            {...allowResultViewingOverride.as("checkbox")}
+                            checked={user.allowResultViewingOverride}
+                        />
                     </label>
 
                     <fieldset>

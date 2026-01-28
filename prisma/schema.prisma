@@ -35,9 +35,10 @@ model User {
 
     hasFinishedSetup Boolean @default(false)
 
-    allowSetupOverride  Boolean @default(false)
-    allowSignupOverride Boolean @default(false)
-    allowVotingOverride Boolean @default(false)
+    allowSetupOverride         Boolean @default(false)
+    allowSignupOverride        Boolean @default(false)
+    allowVotingOverride        Boolean @default(false)
+    allowResultViewingOverride Boolean @default(false)
 
     votesCasted   Vote[] @relation("castedVotes")
     votesReceived Vote[] @relation("receivedVotes")
