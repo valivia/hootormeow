@@ -7,8 +7,14 @@
     import Progress from "components/Progress.svelte";
     import { fly } from "svelte/transition";
     import { canViewResults } from "lib/user";
+    import Dialog from "./components/Dialog.svelte";
+    import VoteButton from "./components/VoteButton.svelte";
+    import { onMount } from "svelte";
 
     let { data } = $props();
+
+    let dialog: HTMLDialogElement;
+
     let candidates = $state(data.candidates);
 
     let currentUserIndex = $state(
@@ -26,6 +32,10 @@
     let favouriteUsed = $derived(candidates.some((c) => c.vote === VoteKey.favourite));
 
     let startTime = $state(new Date());
+
+    onMount(() => {
+        if (voteCount === 0) dialog.showModal();
+    });
 
     function changeIndex(change: number) {
         const newIndex = currentUserIndex + change;
@@ -58,6 +68,8 @@
     <span>{currentUserIndex + 1} / {candidates.length}</span>
 </header>
 
+<Dialog bind:dialog />
+
 <main>
     {#if candidates.length === 0}
         <p>No candidates available for voting at this time.</p>
@@ -74,30 +86,9 @@
 
         <!-- Vote -->
         <fieldset>
-            {#snippet vote(voteKey: VoteKey)}
-                {#key currentUser.id + voteKey}
-                    {@const vote = voteType[voteKey]}
-                    {@const isCurrent = currentUser.vote === voteKey}
-                    {@const Icon = vote.icon}
-                    <button
-                        data-vote={voteKey}
-                        data-favourite-used={voteKey === VoteKey.favourite && !isCurrent && favouriteUsed}
-                        class:active={isCurrent}
-                        style="--color: {vote.color};"
-                        disabled={isCurrent || (voteKey === VoteKey.favourite && favouriteUsed)}
-                        onclick={async () => castVote(voteKey)}
-                    >
-                        <Icon />
-                        {#if voteKey === VoteKey.favourite}
-                            <span>{favouriteUsed ? "0" : "1"}/1</span>
-                        {/if}
-                    </button>
-                {/key}
-            {/snippet}
-
-            {@render vote(VoteKey.pass)}
-            {@render vote(VoteKey.favourite)}
-            {@render vote(VoteKey.smash)}
+            <VoteButton voteKey={VoteKey.pass} {castVote} {currentUser} {favouriteUsed} />
+            <VoteButton voteKey={VoteKey.favourite} {castVote} {currentUser} {favouriteUsed} />
+            <VoteButton voteKey={VoteKey.smash} {castVote} {currentUser} {favouriteUsed} />
         </fieldset>
 
         <!-- Navigation -->
@@ -133,6 +124,7 @@
 
 <style lang="scss">
     @use "styles/utils.scss" as *;
+
     header,
     main {
         width: var(--content-width);
@@ -165,54 +157,5 @@
         gap: 1rem;
         margin-block: 1.5rem;
         padding-inline: 1rem;
-    }
-
-    button {
-        color: var(--color);
-        aspect-ratio: 1 /1;
-        font-size: 1.5rem;
-        background-color: transparent;
-
-        border-radius: 100vw;
-        border: 2px solid currentColor;
-
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        width: 3em;
-
-        cursor: pointer;
-
-        & > span {
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        &:hover {
-            color: oklch(from var(--color) calc(l + 0.1) calc(c + 0.02) h);
-        }
-
-        &[data-vote="favourite"] {
-            font-size: 1.2rem;
-
-            &[data-favourite-used="true"] {
-                color: oklch(from var(--color) 60% 20% h);
-                cursor: default;
-            }
-        }
-
-        &.active {
-            background-color: var(--color);
-            border-color: var(--color);
-            color: var(--theme-primary);
-            cursor: default;
-        }
-
-        &:focus-visible {
-            outline: 2px solid var(--color);
-            outline-offset: 0.3em;
-        }
     }
 </style>
