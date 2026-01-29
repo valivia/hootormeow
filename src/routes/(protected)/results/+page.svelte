@@ -3,7 +3,6 @@
     import { type UserWithVotes } from "lib/user";
     import { getResults } from "./results.remote";
     import Progress from "components/Progress.svelte";
-    import { onMount } from "svelte";
     import type { Snapshot } from "./$types";
 
     let data = getResults();
@@ -22,21 +21,6 @@
         capture: () => category,
         restore: (value) => (category = value),
     };
-
-    // onMount(() => {
-    //     const source = new EventSource("/events");
-
-    //     source.onopen = () => {
-    //         console.log("Connection to event stream opened.");
-    //     };
-
-    //     source.onmessage = (event) => {
-    //         console.log("Received event:", event.data);
-    //         if (event.data === "results-updated") {
-    //             data.refresh();
-    //         }
-    //     };
-    // });
 
     function getFilteredList(results: UserWithVotes[], category: string) {
         let lastIndex = 0;

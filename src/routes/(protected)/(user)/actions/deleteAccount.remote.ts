@@ -5,7 +5,7 @@ import { logger } from "lib/server/logger";
 import { Avatar } from "lib/server/avatar";
 import { redirect } from "@sveltejs/kit";
 import { safeUserOmit } from "lib/user";
-import { sse } from "lib/server/sse";
+import { liveUpdate } from "lib/server/sse";
 
 export const deleteAccount = form(
     async () => {
@@ -30,7 +30,7 @@ export const deleteAccount = form(
         const { cookies } = getRequestEvent();
         cookies.set("sessionToken", "", { path: "/", expires: new Date(0) });
 
-        sse.broadcast("results-updated");
+        liveUpdate.broadcast("results-updated");
 
         logger.info(`🗑️  Deleted user ${user.displayName}`, { user });
 

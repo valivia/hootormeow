@@ -4,7 +4,7 @@ import { VoteKey, voteType } from "lib/vote";
 import { logger } from "lib/server/logger";
 import { prisma } from "lib/server/prisma";
 import { ensureLoggedIn } from "lib/server/session";
-import { sse } from "lib/server/sse";
+import { liveUpdate } from "lib/server/sse";
 import { error } from "@sveltejs/kit";
 import { writeStatistics } from "lib/server/statistics";
 import { canVote } from "lib/user";
@@ -56,7 +56,7 @@ export const addVote = command(
 
         // Notify when results when all votes are in
         if (votes.length >= userCount - 1) {
-            sse.broadcast("results-updated");
+            liveUpdate.broadcast("results-updated");
 
             setImmediate(() => {
                 writeStatistics().catch(err => {

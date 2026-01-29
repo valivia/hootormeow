@@ -3,7 +3,7 @@ import { ensureLoggedIn } from "lib/server/session";
 import { prisma } from "lib/server/prisma";
 import { logger } from "lib/server/logger";
 import { safeUserOmit } from "lib/user";
-import { sse } from "lib/server/sse";
+import { liveUpdate } from "lib/server/sse";
 
 export const resetVotes = form(
     async () => {
@@ -15,7 +15,7 @@ export const resetVotes = form(
             omit: safeUserOmit
         });
 
-        sse.broadcast("results-updated");
+        liveUpdate.broadcast("results-updated");
 
         logger.info(`🔄 Reset votes for user ${user.displayName}`, { user });
         return user;
