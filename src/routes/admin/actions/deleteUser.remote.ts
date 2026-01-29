@@ -10,7 +10,7 @@ import { error } from "console";
 export const deleteUser = command(
     v.string(),
     async (id) => {
-        ensureLoggedIn(true);
+        await ensureLoggedIn(true);
 
         try {
             const deletedUser = await prisma.user.delete({

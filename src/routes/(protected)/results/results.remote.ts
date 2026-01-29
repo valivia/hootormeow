@@ -18,8 +18,16 @@ export const getResults = query(async () => {
 
     const data = await prisma.user.findMany({
         include: {
-            votesReceived: true,
-            votesCasted: true,
+            votesReceived: {
+                where: {
+                    source: { hasFinishedSetup: true }
+                }
+            },
+            votesCasted: {
+                where: {
+                    target: { hasFinishedSetup: true }
+                }
+            }
         },
         omit: safeUserOmit,
         where: {
@@ -37,6 +45,7 @@ export const getResults = query(async () => {
 
     const results: UserWithVotes[] = data
         .map((user) => {
+            // Calculate votes
             const votes = user.votesReceived.reduce((acc, vote) => {
                 const key = vote.vote as VoteKey;
                 acc[key]++;
@@ -48,6 +57,10 @@ export const getResults = query(async () => {
                 pass: 0,
                 total: 0,
             } as UserWithVotes["votes"]);
+
+            // Bonus point for voting for everyone
+            if (user.votesCasted.length === data.length - 1)
+                votes.total += voteType.smash.score;
 
             return {
                 ...user,

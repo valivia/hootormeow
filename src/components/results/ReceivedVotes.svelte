@@ -31,7 +31,7 @@
         align-items: center;
     }
     ul {
-        font-size: 0.9rem;
+        font-size: clamp(0.7rem, 1.5vw, 1rem);
         list-style: none;
         gap: 0.7em;
     }

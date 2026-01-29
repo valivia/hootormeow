@@ -1,6 +1,6 @@
 import { prisma } from "lib/server/prisma";
 import type { PageServerLoad } from "./$types";
-import { error, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import { ensureLoggedIn } from "lib/server/session";
 import { canVote, safeUserOmit } from "lib/user";
 import { shuffle } from "lib/shuffle";

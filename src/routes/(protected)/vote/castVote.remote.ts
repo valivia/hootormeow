@@ -29,12 +29,12 @@ export const addVote = command(
             throw error(403, "Voting is currently closed.");
         }
 
-        const hasUsedFavourite = await prisma.vote.findMany({
-            where: { sourceId: user.id, vote: VoteKey.favourite },
+        const previousVotes = await prisma.vote.findMany({
+            where: { sourceId: user.id },
         });
 
         // Prevent more than 1 favourite vote
-        if (hasUsedFavourite.length > 0 && vote === VoteKey.favourite) {
+        if (previousVotes.some(v => v.vote === VoteKey.favourite) && vote === VoteKey.favourite) {
             throw error(400, "You have already used your favourite vote.");
         }
 
@@ -42,7 +42,7 @@ export const addVote = command(
             where: { sourceId_targetId: { sourceId, targetId } },
             create: {
                 vote, source: { connect: { id: sourceId } },
-                time,
+                time: previousVotes.some(v => v.targetId === targetId) ? undefined : time,
                 target: { connect: { id: targetId } },
             },
             update: { vote, timesChanged: { increment: 1 } },

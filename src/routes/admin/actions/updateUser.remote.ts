@@ -15,7 +15,7 @@ export const updateUser = form(
         displayName: v.optional(v.string()),
     }),
     async ({ id, allowSetupOverride, allowSignupOverride, allowVotingOverride, allowResultViewingOverride, displayName }) => {
-        ensureLoggedIn(true);
+        await ensureLoggedIn(true);
 
         let user = await prisma.user.findUnique({
             where: { id }

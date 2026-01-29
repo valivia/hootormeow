@@ -70,7 +70,6 @@
         grid-template-areas: "avatar score info total";
         column-gap: 0.5rem;
 
-        width: min(60ch, 90vw);
         margin-bottom: 1.6rem;
 
         border-radius: var(--border-radius);
@@ -129,14 +128,14 @@
 
     .info {
         grid-area: info;
-        padding: 0.8rem 0;
+        padding-block: 0.8rem clamp(0.5rem, 1.5vw, 1rem);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
 
         h3 {
             grid-area: title;
-            font-size: clamp(1rem, 3vw, 1.1rem);
+            font-size: clamp(1rem, 3vw, 1.2rem);
 
             & span {
                 color: oklch(from var(--theme-text) 60% c h);

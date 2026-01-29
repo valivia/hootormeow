@@ -1,6 +1,6 @@
 <script lang="ts">
     import Button from "components/Button.svelte";
-    import { VoteKey, voteType, type VoteType } from "lib/vote";
+    import { VoteKey } from "lib/vote";
     import Anchor from "components/Anchor.svelte";
     import { addVote } from "./castVote.remote";
     import Profile from "components/Profile.svelte";
@@ -68,7 +68,7 @@
     <span>{currentUserIndex + 1} / {candidates.length}</span>
 </header>
 
-<Dialog bind:dialog />
+<Dialog bind:dialog onClose={() => (startTime = new Date())} />
 
 <main>
     {#if candidates.length === 0}

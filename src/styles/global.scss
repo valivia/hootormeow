@@ -46,7 +46,7 @@ html {
     color: var(--theme-text);
     background-color: var(--theme-primary);
 
-    scrollbar-gutter: stable both-edges;
+    scrollbar-gutter: stable;
 
     &[data-theme="dark"] {
         --theme: dark;
@@ -70,6 +70,11 @@ body {
     min-height: 100dvh;
     padding-inline: 1.5rem;
     padding-block: 1.5rem 4rem;
+
+
+    &:has(dialog[open]) {
+        overflow: hidden;
+    }
 }
 
 ::-webkit-scrollbar {

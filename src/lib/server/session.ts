@@ -3,7 +3,6 @@ import { prisma } from "./prisma";
 import { canAccessSetup, safeUserOmit, type ClientUser } from "lib/user";
 import { getRequestEvent } from "$app/server";
 import { PUBLIC_OWNER_ID } from "$env/static/public";
-import { env } from "process";
 
 export async function loggedInUser(): Promise<ClientUser | null> {
     const { cookies } = getRequestEvent();

@@ -15,7 +15,7 @@
 
 <header>
     <h1>Profile Picture</h1>
-    <p>Upload a picture of yourself to personalize your account.</p>
+    <p>Upload a picture of <u>yourself</u> to personalize your account.</p>
 </header>
 
 <main class="content">

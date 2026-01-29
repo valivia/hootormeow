@@ -5,12 +5,13 @@
 
     interface Props {
         dialog: HTMLDialogElement;
+        onClose: () => void;
     }
 
-    let { dialog = $bindable() }: Props = $props();
+    let { dialog = $bindable(), onClose: close }: Props = $props();
 </script>
 
-<dialog bind:this={dialog}>
+<dialog bind:this={dialog} onclose={close}>
     <ul>
         <li>
             <VoteButton voteKey={VoteKey.pass} currentUser={{ vote: null }} />
