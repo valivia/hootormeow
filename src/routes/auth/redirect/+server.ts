@@ -1,11 +1,8 @@
-// http://localhost:5173/auth/redirect?error=access_denied&error_description=The+resource+owner+or+authorization+server+denied+the+request
-// http://localhost:5173/auth/redirect?code=lbozoratio
-
 import { redirect, type RequestHandler } from "@sveltejs/kit";
 import { nanoid } from "nanoid";
 import { DISCORD_TOKEN_URL, DISCORD_USER_URL } from "lib/auth";
 import { prisma } from "lib/server/prisma";
-import { PUBLIC_ALLOW_SIGNUP, PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
+import { PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
 import { DISCORD_CLIENT_SECRET } from "$env/static/private";
 import { logger } from "lib/server/logger";
 
@@ -68,11 +65,7 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
     const ip = request.headers.get("cf-connecting-ip");
 
     if (!user) {
-        if (PUBLIC_ALLOW_SIGNUP !== "true") {
-            logger.info(`Sign up is disabled: ${userJson.global_name} - ${userJson.id} (${ip})`, { userJson, ip });
-            return new Response("Sign up is disabled");
-        }
-
+        // Signup
         user = await prisma.user.create({
             data: {
                 id: userJson.id,
@@ -80,25 +73,33 @@ export const GET: RequestHandler = async ({ url, cookies, request }) => {
                 displayName: userJson.global_name,
                 userName: userJson.username,
                 avatar: userJson.avatar,
-                isFeminine: false,
-                isMasculine: false,
+                isFem: false,
+                isMasc: false,
             }
         });
-        logger.info(`User create: ${user.displayName} - ${userJson.id} (${ip})`, { user, ip });
+        logger.info(`🆕 User create: ${user.displayName} - ${userJson.id} (${ip})`, { user, ip });
+
     } else if (userJson.avatar !== user.avatar || userJson.username !== user.userName) {
+        // Update existing user
         user = await prisma.user.update({
             where: { id: userJson.id },
             data: {
                 userName: userJson.username,
+                isDiscordAvatar: userJson.avatar !== user.avatar ? false : undefined,
                 avatar: userJson.avatar,
             }
         });
-        logger.info(`User update: ${user.displayName} - ${user.id} (${ip})`, { user, ip });
+        logger.info(`📝 User update: ${user.displayName} - ${user.id} (${ip})`, { user, ip });
     } else {
-        logger.info(`User log in: ${user.displayName} - ${user.id} (${ip})`, { user, ip });
+        // Login
+        logger.info(`🔑 User log in: ${user.displayName} - ${user.id} (${ip})`, { user, ip });
     }
 
     const tokenExpirationDate = new Date(Date.now() + (60 * 60 * 24 * 7 * 1000));
     cookies.set("sessionToken", user.token, { path: "/", expires: tokenExpirationDate });
-    redirect(302, "/");
+
+    if (user.hasFinishedSetup)
+        return redirect(302, "/");
+    else
+        return redirect(302, "/onboarding");
 };

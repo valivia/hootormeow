@@ -1,26 +1,45 @@
 <script lang="ts">
-    import UserResult from "components/results/UserResult.svelte";
-    import type { UserWithVotesDisplay } from "lib/user.js";
+    import UserResults from "components/results/UserResults.svelte";
+    import { type UserWithVotes } from "lib/user";
+    import { getResults } from "./results.remote";
+    import Progress from "components/Progress.svelte";
+    import type { Snapshot } from "./$types";
 
-    let { data } = $props();
-    let { results } = data;
+    let data = getResults();
 
-    let category = $state("both");
+    const categories = $derived.by(() => {
+        let options = ["All"];
+        if (data.current?.results.some((user) => user.isEnby)) options.unshift("Enby");
+        if (data.current?.results.some((user) => user.isFem)) options.unshift("Fem");
+        if (data.current?.results.some((user) => user.isMasc)) options.unshift("Masc");
+        return options;
+    });
 
-    $inspect(category);
-    $inspect(results);
+    let category = $state("All");
 
-    let displayedUsers: UserWithVotesDisplay[] = $derived.by(() => {
+    export const snapshot: Snapshot<string> = {
+        capture: () => category,
+        restore: (value) => (category = value),
+    };
+
+    function getFilteredList(results: UserWithVotes[], category: string) {
         let lastIndex = 0;
+        if (!data.current) {
+            return [];
+        }
         const output = results
             // Filter by category
             .filter((user) => {
-                if (category === "feminine") {
-                    return user.isFeminine;
-                } else if (category === "masculine") {
-                    return user.isMasculine;
+                switch (category) {
+                    case "Fem":
+                        return user.isFem;
+                    case "Masc":
+                        return user.isMasc;
+                    case "Enby":
+                        return user.isEnby;
+                    default:
+                        return true;
                 }
-                return true;
             })
             // Add rank and contested status
             .map((user, i, arr) => {
@@ -46,47 +65,70 @@
         lastIndex = 0;
 
         return output;
-    });
+    }
 </script>
 
-<h1>Results</h1>
+<header>
+    <h1>Results</h1>
+    <!-- Progress -->
+    {#if data.error}
+        <p class="error">{data.error.body.message}</p>
+    {/if}
+    {#if data.current}
+        {@const { totalVotesCasted, userCount } = data.current}
+        {@const percentVoted = totalVotesCasted === 0 ? 0 : (totalVotesCasted / (userCount * (userCount - 1))) * 100}
+        <p>{percentVoted.toFixed(1)}% of votes have been counted</p>
+        <Progress value={Number(percentVoted)} max={100} />
+    {/if}
+</header>
 
-{data.usersVoted}/{data.users} users have voted
+<main>
+    <!-- Category select -->
+    {#if categories.length > 2}
+        <section class="selector">
+            {#each categories as option}
+                <label>
+                    <input type="radio" name="category" value={option} bind:group={category} />
+                    {option}
+                </label>
+            {/each}
+        </section>
+    {/if}
 
-<section class="selector">
-    <label>
-        <input type="radio" name="category" value="feminine" bind:group={category} />
-        Feminine
-    </label>
-    <label>
-        <input type="radio" name="category" value="masculine" bind:group={category} />
-        Masculine
-    </label>
-    <label>
-        <input type="radio" name="category" value="both" bind:group={category} />
-        Both
-    </label>
-</section>
-
-<ol>
-    {#each displayedUsers as user (user.id + user.rank)}
-        <UserResult {user} />
-    {/each}
-</ol>
+    <!-- Results -->
+    {#if data.current}
+        {@const displayedUsers = getFilteredList(data.current.results, category)}
+        <UserResults users={displayedUsers} />
+    {/if}
+</main>
 
 <style lang="scss">
-    ol {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+    @use "styles/utils" as *;
+
+    header,
+    main {
+        margin-inline: auto;
+    }
+
+    header {
+        width: var(--content-width);
+    }
+
+    main {
+        @include content-width(60ch, 70ch);
     }
 
     .selector {
         display: flex;
 
-        border: 2px solid var(--theme-text);
+        color: var(--theme-accent);
+        border: 2px solid currentColor;
         border-radius: 100vw;
         overflow: hidden;
+        width: fit-content;
+
+        margin-inline: auto;
+        margin-block: 1.5rem 1rem;
 
         label {
             padding: 0.3rem 1rem;
@@ -94,12 +136,12 @@
 
             &:has(input:checked),
             &:hover {
-                background-color: var(--theme-text);
+                background-color: var(--theme-accent);
                 color: var(--theme-primary);
             }
 
             &:not(:last-child) {
-                border-right: 1px solid var(--theme-text);
+                border-right: 1px solid currentColor;
             }
         }
 

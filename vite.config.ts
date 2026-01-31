@@ -3,13 +3,20 @@ import { defineConfig } from "vite";
 import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
-	plugins: [
-		sveltekit(),
-		Icons({ compiler: "svelte", autoInstall: true }),
-	],
-	resolve: {
-		alias: {
-			".prisma/client/index-browser": "./node_modules/.prisma/client/index-browser.js"
-		}
-	}
+    plugins: [
+        sveltekit(),
+        Icons({ compiler: "svelte", autoInstall: true }),
+    ],
+
+    server: {
+        fs: {
+            allow: ["media"]
+        }
+    },
+
+    resolve: {
+        alias: {
+            ".prisma/client/index-browser": "./node_modules/.prisma/client/index-browser.js"
+        }
+    }
 });

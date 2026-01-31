@@ -1,10 +1,12 @@
-import ISave from "virtual:icons/carbon/save";
-import ITrashCan from "virtual:icons/carbon/trash-can";
-import ILogOut from "virtual:icons/carbon/logout";
-import IHeart from "virtual:icons/carbon/favorite";
-import IScissors from "virtual:icons/carbon/cut";
-import IHelpCircle from "virtual:icons/carbon/help";
-import ISlash from "virtual:icons/carbon/error-outline";
-import IWarning from "virtual:icons/carbon/warning-alt";
-
-export { ISave, ITrashCan, ILogOut, IHeart, IScissors, IHelpCircle, ISlash, IWarning };
+export { default as ISave } from "virtual:icons/carbon/save";
+export { default as ITrashCan } from "virtual:icons/carbon/trash-can";
+export { default as ILogOut } from "virtual:icons/carbon/logout";
+export { default as IHeart } from "virtual:icons/carbon/favorite";
+export { default as IScissors } from "virtual:icons/carbon/cut";
+export { default as IHelpCircle } from "virtual:icons/carbon/help";
+export { default as ISlash } from "virtual:icons/carbon/error-outline";
+export { default as IWarning } from "virtual:icons/carbon/warning-alt";
+export { default as IHome } from "virtual:icons/carbon/home";
+export { default as IResult } from "virtual:icons/carbon/result";
+export { default as IUser } from "virtual:icons/carbon/user";
+export { default as IStar } from "virtual:icons/carbon/star";

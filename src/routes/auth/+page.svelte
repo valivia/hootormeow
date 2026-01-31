@@ -1,11 +1,7 @@
 <script lang="ts">
     import { DISCORD_AUTHORIZE_URL } from "lib/auth";
-    import type { PageData } from "./$types";
-
     import { PUBLIC_DISCORD_CLIENT_ID, PUBLIC_DISCORD_REDIRECT_URI } from "$env/static/public";
-
-    export let data: PageData;
-    let { user } = data;
+    import Anchor from "components/Anchor.svelte";
 
     const queryParams = new URLSearchParams({
         client_id: PUBLIC_DISCORD_CLIENT_ID,
@@ -14,28 +10,22 @@
         prompt: "none",
         redirect_uri: PUBLIC_DISCORD_REDIRECT_URI,
     });
+
     const finalUrl = `${DISCORD_AUTHORIZE_URL}?${queryParams.toString()}`;
 </script>
 
 <main>
-    {#if user}
-        <h1>Welcome back, {user.displayName}!</h1>
-        <p>You are now logged in.</p>
-        <a href="/">Go back</a>
-    {:else}
-        <h1>Log in to continue</h1>
-        <a href={finalUrl}>Log in</a>
-    {/if}
+    <h1>Hoot Or Meow</h1>
+    <p>Welcome to Hoot Or Meow! Please log in with Discord to continue.</p>
+    <div>
+        <Anchor href={finalUrl}>Log in</Anchor>
+    </div>
 </main>
 
 <style lang="scss">
-    main {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        margin-inline: auto;
-        max-width: 30rem;
-        padding: 1rem;
-        text-align: center;
+    @use "styles/info" as *;
+
+    div {
+        margin-top: 1rem;
     }
 </style>

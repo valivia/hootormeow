@@ -1,0 +1,59 @@
+@property --l1 {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0.8;
+}
+
+@property --l2 {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0.7;
+}
+
+@keyframes glow {
+    from {
+        --l1: 0.75;
+        --l2: 0.65;
+    }
+    to {
+        --l1: 0.85;
+        --l2: 0.75;
+    }
+}
+
+main {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 15dvh;
+
+    color: black;
+
+    background-image: linear-gradient(
+        135deg,
+        oklch(from var(--theme-accent) var(--l1) c h),
+        oklch(from var(--theme-accent) var(--l2) c h)
+    );
+
+    animation: glow 6s ease-in-out infinite alternate;
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+    }
+}
+
+span,
+p {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    text-align: center;
+}
+
+h1 {
+    width: min(100%, 30ch);
+    text-align: center;
+    font-weight: 500;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+}

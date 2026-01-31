@@ -21,7 +21,7 @@
     margin: 0.3rem 0;
     white-space: nowrap;
 
-    font-weight: bold;
+    font-weight: 600;
     font-size: 0.8rem;
 
     width: min-content;
@@ -29,6 +29,7 @@
 
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5em;
 
     :global(> svg) {
@@ -39,7 +40,7 @@
     // Variant
     &[data-variant="primary"] {
         background-color: var(--used-color);
-        color: var(--theme-secondary);
+        color: var(--theme-text);
     }
 
     &[data-variant="secondary"] {
@@ -48,12 +49,13 @@
     }
 
     &:hover:not(:disabled) {
-        --used-color: color-mix(in oklab, var(--color) 50%, var(--theme-text));
+        --used-color: oklch(from var(--color) calc(l + 0.05) c h);
     }
 
     &[data-icon="true"] {
         border-radius: 100vw;
         padding: 0.8rem;
+        aspect-ratio: 1 / 1;
     }
 
     &:focus-visible {
