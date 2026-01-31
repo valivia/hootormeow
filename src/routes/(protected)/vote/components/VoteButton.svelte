@@ -6,15 +6,16 @@
         castVote?: (vote: VoteKey) => Promise<void>;
         currentUser: { vote: string | null };
         favouriteUsed?: boolean;
+        disabled?: boolean;
     }
 
-    let { voteKey, castVote, currentUser, favouriteUsed = false }: Props = $props();
+    let { voteKey, castVote, currentUser, favouriteUsed = false, disabled: disabledProp = false }: Props = $props();
 
     const vote = $derived(voteType[voteKey]);
     const isCurrent = $derived(currentUser.vote === voteKey);
     const Icon = $derived(vote.icon);
 
-    const disabled = $derived(isCurrent || (voteKey === VoteKey.favourite && favouriteUsed));
+    const disabled = $derived(disabledProp || isCurrent || (voteKey === VoteKey.favourite && favouriteUsed));
     const onclick = $derived(castVote ? async () => castVote(voteKey) : undefined);
 </script>
 

@@ -46,17 +46,21 @@
 
     async function castVote(vote: VoteKey) {
         try {
+            loading = true;
             const result = await addVote({
                 time: Date.now() - startTime.getTime(),
                 targetId: currentUser.id,
                 vote,
             });
             candidates[currentUserIndex].vote = vote;
+            startTime = new Date();
             if (voteCount === candidates.length) return;
             changeIndex(1);
         } catch (error) {
             console.error("Vote submission failed", error);
             alert("There was an error submitting your vote.");
+        } finally {
+            loading = false;
         }
     }
 
@@ -86,9 +90,9 @@
 
         <!-- Vote -->
         <fieldset>
-            <VoteButton voteKey={VoteKey.pass} {castVote} {currentUser} {favouriteUsed} />
-            <VoteButton voteKey={VoteKey.favourite} {castVote} {currentUser} {favouriteUsed} />
-            <VoteButton voteKey={VoteKey.smash} {castVote} {currentUser} {favouriteUsed} />
+            <VoteButton voteKey={VoteKey.pass} {castVote} {currentUser} {favouriteUsed} disabled={loading} />
+            <VoteButton voteKey={VoteKey.favourite} {castVote} {currentUser} {favouriteUsed} disabled={loading} />
+            <VoteButton voteKey={VoteKey.smash} {castVote} {currentUser} {favouriteUsed} disabled={loading} />
         </fieldset>
 
         <!-- Navigation -->

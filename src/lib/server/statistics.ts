@@ -5,8 +5,13 @@ import { logger } from "./logger";
 
 export async function writeStatistics() {
     const startTime = Date.now();
-    const users = await prisma.user.findMany();
-    const votes = await prisma.vote.findMany();
+    const users = await prisma.user.findMany({ where: { hasFinishedSetup: true } });
+    const votes = await prisma.vote.findMany({
+        where: {
+            source: { hasFinishedSetup: true },
+            target: { hasFinishedSetup: true }
+        }
+    });
 
     const voteMap = new Map();
 
@@ -37,5 +42,5 @@ export async function writeStatistics() {
         writeFile("logs/timesChanged.csv", csvTimesChanged)
     ]);
 
-    logger.info(`📊 CSV files written successfully (${Date.now() - startTime}ms)`, { csvVote, csvTime, csvTimesChanged });
+    // logger.info(`📊 CSV files written successfully (${Date.now() - startTime}ms)`, { csvVote, csvTime, csvTimesChanged });
 }
