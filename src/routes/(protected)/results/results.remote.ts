@@ -2,7 +2,7 @@ import { query } from "$app/server";
 import { error } from "@sveltejs/kit";
 import { prisma } from "lib/server/prisma";
 import { ensureLoggedIn } from "lib/server/session";
-import { NEGATIVE_VOTER_DEBUFF, NEGATIVE_VOTER_DEBUFF_THRESHOLD, VOTE_COMPLETE_BONUS, voteScore } from "lib/server/voteScore";
+import { NEGATIVE_VOTER_DEBUFF, NEGATIVE_VOTER_DEBUFF_THRESHOLD, POSITIVITY_BONUS, POSITIVITY_BONUS_CAP, VOTE_COMPLETE_BONUS, voteScore } from "lib/server/voteScore";
 import { canViewResults, isAdmin, safeUserOmit, type UserWithVotes } from "lib/user";
 import { VoteKey } from "lib/vote";
 
@@ -59,9 +59,6 @@ export const getResults = query(async () => {
                 total: 0,
             } as UserWithVotes["votes"]);
 
-            // Bonus point for voting for everyone
-            if (user.votesCasted.length === data.length - 1)
-                votes.total += VOTE_COMPLETE_BONUS;
 
             // Debuff for downvoting excessively
             const passRatio = user.votesCasted.filter(vote => vote.vote === VoteKey.pass).length / user.votesCasted.length;
@@ -69,7 +66,15 @@ export const getResults = query(async () => {
                 votes.total -= NEGATIVE_VOTER_DEBUFF;
             }
 
-            votes.total = Math.round(votes.total);
+            // Bonus point for voting for everyone
+            if (user.votesCasted.length === data.length - 1) {
+                votes.total += VOTE_COMPLETE_BONUS;
+                // Bonus points for positivity
+                const positivityBonusRatio = Math.max(0, Math.min(1 - passRatio, POSITIVITY_BONUS_CAP)) / POSITIVITY_BONUS_CAP;
+                votes.total += positivityBonusRatio * POSITIVITY_BONUS;
+            }
+
+            votes.total = Math.round(votes.total * 100) / 100;
 
             return {
                 ...user,

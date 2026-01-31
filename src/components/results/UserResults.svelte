@@ -50,7 +50,7 @@
                 <h3><span>{rank}.</span> {user.displayName}</h3>
                 <ReceivedVotes {user} />
             </div>
-            <span class="total" class:isContested>{Math.max(user.votes.total, 0)}</span>
+            <span class="total" class:isContested>{Math.max(Math.round(user.votes.total), 0)}</span>
         </li>
     {/each}
 </ol>
