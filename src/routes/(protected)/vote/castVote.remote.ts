@@ -20,13 +20,13 @@ export const addVote = command(
 
         const sourceId = user.id;
 
+        if (!canVote(user)) {
+            throw error(403, "Voting is currently closed.");
+        }
+
         // Prevent voting for yourself
         if (sourceId === targetId) {
             throw error(400, "You cannot vote for yourself.");
-        }
-
-        if (!canVote(user)) {
-            throw error(403, "Voting is currently closed.");
         }
 
         const previousVotes = await prisma.vote.findMany({
@@ -37,6 +37,10 @@ export const addVote = command(
         if (previousVotes.some(v => v.vote === VoteKey.favourite) && vote === VoteKey.favourite) {
             throw error(400, "You have already used your favourite vote.");
         }
+
+        // Prevent duplicate votes
+        const currentVoteOnTarget = previousVotes.find(v => v.targetId === targetId);
+        if (currentVoteOnTarget && currentVoteOnTarget.vote === vote) return;
 
         const result = await prisma.vote.upsert({
             where: { sourceId_targetId: { sourceId, targetId } },
@@ -67,5 +71,5 @@ export const addVote = command(
 
         logger.info(`🗳️  ${result.source.displayName} voted ${vote} on ${result.target.displayName} in ${time}ms`, { vote: result });
 
-        return { vote: result };
+        return;
     });

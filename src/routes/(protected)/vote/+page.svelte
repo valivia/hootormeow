@@ -47,7 +47,7 @@
     async function castVote(vote: VoteKey) {
         try {
             loading = true;
-            const result = await addVote({
+            await addVote({
                 time: Date.now() - startTime.getTime(),
                 targetId: currentUser.id,
                 vote,
